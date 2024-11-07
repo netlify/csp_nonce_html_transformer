@@ -1,10 +1,6 @@
-use super::end_tag::EndTag;
-use super::handlers::{await_promise, make_handler, HandlerJsErrorWrap};
 use super::*;
-use js_sys::{Function as JsFunction, Promise as JsPromise};
 use lol_html::html_content::Element as NativeElement;
 use serde_wasm_bindgen::to_value as to_js_value;
-use wasm_bindgen::JsCast;
 
 #[wasm_bindgen]
 pub struct Element(NativeRefWrap<NativeElement<'static, 'static>>);

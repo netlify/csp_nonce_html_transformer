@@ -47,7 +47,7 @@ pub struct HTMLRewriter {
     output_sink: Option<JsOutputSink>,
     inner: Option<NativeHTMLRewriter<'static, JsOutputSink>>,
     inner_constructed: bool,
-    asyncify_stack: Vec<u8>,
+    stack: Vec<u8>,
     enable_esi_tags: bool,
 }
 
@@ -65,7 +65,7 @@ impl HTMLRewriter {
     pub fn new(output_sink: &JsFunction, options: Option<HTMLRewriterOptions>) -> Self {
         HTMLRewriter {
             output_sink: Some(JsOutputSink::new(output_sink)),
-            asyncify_stack: vec![0; 1024],
+            stack: vec![0; 1024],
             enable_esi_tags: options.and_then(|o| o.enable_esi_tags()).unwrap_or(false),
             ..Self::default()
         }
@@ -114,7 +114,7 @@ impl HTMLRewriter {
         let selector = selector.parse::<Selector>().into_js_result()?;
 
         self.selectors.push(selector);
-        let stack_ptr = self.asyncify_stack_ptr();
+        let stack_ptr = self.stack_ptr();
         self.element_content_handlers
             .push(handlers.into_native(stack_ptr));
 
@@ -124,7 +124,7 @@ impl HTMLRewriter {
     #[wasm_bindgen(method, js_name=onDocument)]
     pub fn on_document(&mut self, handlers: DocumentContentHandlers) -> JsResult<()> {
         self.assert_not_fully_constructed()?;
-        let stack_ptr = self.asyncify_stack_ptr();
+        let stack_ptr = self.stack_ptr();
         self.document_content_handlers
             .push(handlers.into_native(stack_ptr));
 
@@ -147,8 +147,8 @@ impl HTMLRewriter {
             .map_err(rewriting_error_to_js)
     }
 
-    #[wasm_bindgen(method, getter=asyncifyStackPtr)]
-    pub fn asyncify_stack_ptr(&mut self) -> *mut u8 {
-        self.asyncify_stack.as_mut_ptr()
+    #[wasm_bindgen(method, getter=stackPtr)]
+    pub fn stack_ptr(&mut self) -> *mut u8 {
+        self.stack.as_mut_ptr()
     }
 }

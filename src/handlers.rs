@@ -4,7 +4,7 @@ use super::document_end::DocumentEnd;
 use super::element::Element;
 use super::text_chunk::TextChunk;
 use super::*;
-use js_sys::{Function as JsFunction, Promise as JsPromise};
+use js_sys::Function as JsFunction;
 use lol_html::{
     DocumentContentHandlers as NativeDocumentContentHandlers,
     ElementContentHandlers as NativeElementContentHandlers,
@@ -12,7 +12,6 @@ use lol_html::{
 use std::mem;
 use std::rc::Rc;
 use thiserror::Error;
-use wasm_bindgen::JsCast;
 
 // NOTE: Display is noop, because we'll unwrap JSValue error when it will be propagated to
 // `write()` or `end()`.
@@ -23,12 +22,6 @@ pub struct HandlerJsErrorWrap(pub JsValue);
 unsafe impl Send for HandlerJsErrorWrap {}
 unsafe impl Sync for HandlerJsErrorWrap {}
 
-#[wasm_bindgen(raw_module = "./asyncify.js")]
-extern "C" {
-    #[wasm_bindgen(js_name = awaitPromise)]
-    pub(crate) fn await_promise(stack_ptr: *mut u8, promise: &JsPromise);
-}
-
 macro_rules! make_handler {
     ($handler:ident, $JsArgType:ident, $this:ident, $stack_ptr:ident) => {
         move |arg: &mut _| {
@@ -36,12 +29,7 @@ macro_rules! make_handler {
             let js_arg = JsValue::from(js_arg);
 
             let res = match $handler.call1(&$this, &js_arg) {
-                Ok(res) => {
-                    if let Some(promise) = res.dyn_ref::<JsPromise>() {
-                        await_promise($stack_ptr, promise);
-                    }
-                    Ok(())
-                }
+                Ok(_) => Ok(()),
                 Err(e) => Err(HandlerJsErrorWrap(e).into()),
             };
 

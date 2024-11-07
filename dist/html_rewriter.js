@@ -1,4 +1,3 @@
-import { awaitPromise } from './asyncify.js';
 
 let wasm;
 
@@ -534,68 +533,6 @@ export class Element {
 }
 /**
 */
-export class EndTag {
-
-    __destroy_into_raw() {
-        const ptr = this.ptr;
-        this.ptr = 0;
-
-        return ptr;
-    }
-
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_endtag_free(ptr);
-    }
-    /**
-    * @returns {string}
-    */
-    get name() {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.endtag_name(retptr, this.ptr);
-            var r0 = getInt32Memory0()[retptr / 4 + 0];
-            var r1 = getInt32Memory0()[retptr / 4 + 1];
-            return getStringFromWasm0(r0, r1);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-            wasm.__wbindgen_free(r0, r1);
-        }
-    }
-    /**
-    * @param {string} name
-    */
-    set name(name) {
-        var ptr0 = passStringToWasm0(name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        var len0 = WASM_VECTOR_LEN;
-        wasm.endtag_set_name(this.ptr, ptr0, len0);
-    }
-    /**
-    * @param {string} content
-    * @param {any | undefined} content_type
-    */
-    before(content, content_type) {
-        var ptr0 = passStringToWasm0(content, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        var len0 = WASM_VECTOR_LEN;
-        wasm.endtag_before(this.ptr, ptr0, len0, isLikeNone(content_type) ? 0 : addHeapObject(content_type));
-    }
-    /**
-    * @param {string} content
-    * @param {any | undefined} content_type
-    */
-    after(content, content_type) {
-        var ptr0 = passStringToWasm0(content, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        var len0 = WASM_VECTOR_LEN;
-        wasm.endtag_after(this.ptr, ptr0, len0, isLikeNone(content_type) ? 0 : addHeapObject(content_type));
-    }
-    /**
-    */
-    remove() {
-        wasm.endtag_remove(this.ptr);
-    }
-}
-/**
-*/
 export class HTMLRewriter {
 
     static __wrap(ptr) {
@@ -659,8 +596,8 @@ export class HTMLRewriter {
     /**
     * @returns {number}
     */
-    get asyncifyStackPtr() {
-        var ret = wasm.htmlrewriter_asyncify_stack_ptr(this.ptr);
+    get stackPtr() {
+        var ret = wasm.htmlrewriter_stack_ptr(this.ptr);
         return ret;
     }
 }
@@ -797,36 +734,13 @@ async function init(input) {
         var ret = getStringFromWasm0(arg0, arg1);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbg_enableEsiTags_de6b91cc61a25874 = function(arg0) {
-        var ret = getObject(arg0).enableEsiTags;
-        return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
-    };
-    imports.wbg.__wbindgen_object_clone_ref = function(arg0) {
-        var ret = getObject(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_comment_new = function(arg0) {
-        var ret = Comment.__wrap(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_doctype_new = function(arg0) {
-        var ret = Doctype.__wrap(arg0);
-        return addHeapObject(ret);
-    };
     imports.wbg.__wbg_documentend_new = function(arg0) {
         var ret = DocumentEnd.__wrap(arg0);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbg_element_new = function(arg0) {
-        var ret = Element.__wrap(arg0);
+    imports.wbg.__wbindgen_object_clone_ref = function(arg0) {
+        var ret = getObject(arg0);
         return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_textchunk_new = function(arg0) {
-        var ret = TextChunk.__wrap(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_awaitPromise_39a1101fd8518869 = function(arg0, arg1) {
-        awaitPromise(arg0, getObject(arg1));
     };
     imports.wbg.__wbg_element_c38470ed972aea27 = function(arg0) {
         var ret = getObject(arg0).element;
@@ -856,6 +770,26 @@ async function init(input) {
         var ret = getObject(arg0).end;
         return isLikeNone(ret) ? 0 : addHeapObject(ret);
     };
+    imports.wbg.__wbg_element_new = function(arg0) {
+        var ret = Element.__wrap(arg0);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_comment_new = function(arg0) {
+        var ret = Comment.__wrap(arg0);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_textchunk_new = function(arg0) {
+        var ret = TextChunk.__wrap(arg0);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_doctype_new = function(arg0) {
+        var ret = Doctype.__wrap(arg0);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_enableEsiTags_de6b91cc61a25874 = function(arg0) {
+        var ret = getObject(arg0).enableEsiTags;
+        return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
+    };
     imports.wbg.__wbg_String_60c4ba333b5ca1c6 = function(arg0, arg1) {
         var ret = String(getObject(arg1));
         var ptr0 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -878,10 +812,6 @@ async function init(input) {
     imports.wbg.__wbg_new_917809a3e20a4b00 = function(arg0, arg1) {
         var ret = new TypeError(getStringFromWasm0(arg0, arg1));
         return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_instanceof_Promise_c6535fc791fcc4d2 = function(arg0) {
-        var ret = getObject(arg0) instanceof Promise;
-        return ret;
     };
     imports.wbg.__wbg_buffer_89a8560ab6a3d9c6 = function(arg0) {
         var ret = getObject(arg0).buffer;

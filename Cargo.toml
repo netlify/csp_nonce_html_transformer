@@ -14,8 +14,3 @@ thiserror = "1.0.2"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
-
-[package.metadata.wasm-pack.profile.dev]
-wasm-opt = ["--asyncify"]
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-Os", "--asyncify"]

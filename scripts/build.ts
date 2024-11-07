@@ -23,7 +23,6 @@ async function main() {
         },
     })
     await shell(`pnpm tsc `)
-    await fs.copy(`src/asyncify.js`, `dist/asyncify.js`, {})
 
     // createa a file base64.js that exports the wasm as a base64 string
     // await fs.writeFile(
