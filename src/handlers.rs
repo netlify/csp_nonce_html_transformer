@@ -15,25 +15,6 @@ pub struct HandlerJsErrorWrap(pub JsValue);
 unsafe impl Send for HandlerJsErrorWrap {}
 unsafe impl Sync for HandlerJsErrorWrap {}
 
-macro_rules! make_handler {
-    ($handler:ident, $JsArgType:ident, $this:ident) => {
-        move |arg: &mut _| {
-            let (js_arg, anchor) = $JsArgType::from_native(arg);
-            let js_arg = JsValue::from(js_arg);
-
-            let res = match $handler.call1(&$this, &js_arg) {
-                Ok(_) => Ok(()),
-                Err(e) => Err(HandlerJsErrorWrap(e).into()),
-            };
-
-            mem::drop(anchor);
-
-            res
-        }
-    };
-}
-pub(crate) use make_handler;
-
 pub trait IntoNativeHandlers<T> {
     fn into_native(self) -> T;
 }
@@ -65,8 +46,8 @@ impl IntoNativeHandlers<NativeElementContentHandlers<'static>> for ElementConten
                     h
                 }
                 lol_html::ElementContentHandlers::default().element(
-                    (type_hint(
-                        (move |el: &mut _| {
+                    type_hint(
+                        move |el: &mut _| {
                             let (js_arg, anchor) = Element::from_native(el);
                             let js_arg = JsValue::from(js_arg);
                             let res = match handler.call1(&this, &js_arg) {
@@ -75,8 +56,8 @@ impl IntoNativeHandlers<NativeElementContentHandlers<'static>> for ElementConten
                             };
                             mem::drop(anchor);
                             res
-                        }),
-                    )),
+                        },
+                    ),
                 )
             };
         }
