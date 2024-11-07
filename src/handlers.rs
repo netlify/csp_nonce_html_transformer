@@ -1,9 +1,7 @@
 use super::element::Element;
 use super::*;
 use js_sys::Function as JsFunction;
-use lol_html::
-    ElementContentHandlers as NativeElementContentHandlers
-;
+use lol_html::ElementContentHandlers as NativeElementContentHandlers;
 use std::mem;
 use std::rc::Rc;
 use thiserror::Error;
@@ -55,7 +53,32 @@ impl IntoNativeHandlers<NativeElementContentHandlers<'static>> for ElementConten
 
         if let Some(handler) = self.element() {
             let this = Rc::clone(&handlers);
-            native = native.element(make_handler!(handler, Element, this));
+            native = {
+                #[inline(always)]
+                fn type_hint<'h, T, H: lol_html::HandlerTypes>(h: T) -> T
+                where
+                    T: FnMut(
+                            &mut lol_html::html_content::Element<'_, '_, H>,
+                        ) -> lol_html::HandlerResult
+                        + 'h,
+                {
+                    h
+                }
+                lol_html::ElementContentHandlers::default().element(
+                    (type_hint(
+                        (move |el: &mut _| {
+                            let (js_arg, anchor) = Element::from_native(el);
+                            let js_arg = JsValue::from(js_arg);
+                            let res = match handler.call1(&this, &js_arg) {
+                                Ok(_) => Ok(()),
+                                Err(e) => Err(HandlerJsErrorWrap(e).into()),
+                            };
+                            mem::drop(anchor);
+                            res
+                        }),
+                    )),
+                )
+            };
         }
 
         native
