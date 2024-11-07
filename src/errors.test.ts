@@ -1,24 +1,21 @@
-import { describe, expect, it, test } from 'vitest'
+import { expect, test } from 'vitest'
 import { HTMLRewriter } from 'htmlrewriter'
 
 test(
     'errors',
     async () => {
-        const abortController = new AbortController()
-        const res = await fetch('https://framer.com/marketplace', {
-            signal: abortController.signal,
-        })
+        const res = await fetch('https://example.com')
 
         const transform = new HTMLRewriter()
             .on('a', {
                 element(element) {
-                    throw new Error('aborted')
+                    throw new Error('error')
                 },
             })
             .transform(res)
         const err = await transform.text().catch((e) => e)
         expect(err).toBeInstanceOf(Error)
-        expect(err.message).toContain('aborted')
+        expect(err.message).toContain('error')
     },
     1000 * 10,
 )
@@ -26,71 +23,44 @@ test(
     'abort',
     async () => {
         const abortController = new AbortController()
-        const res = await fetch('https://framer.com/marketplace', {
+        const res = await fetch('https://example.com', {
             signal: abortController.signal,
         })
+        abortController.abort()
 
         const err = await new HTMLRewriter()
-            .on('a', {
+            .on('body', {
                 element(e) {
-                    const href = e.getAttribute('href')
-                    // console.log('href', href)
-                    if (href && href.includes('/template/')) {
-                        abortController.abort()
-                    }
+                    e.setAttribute('test', 'one')
                 },
             })
             .transform(res)
             .text()
             .catch((e) => e)
-
-        // expect(err).toBeInstanceOf(Error)
-        // expect(err.message).toContain('aborted')
-        // console.log(err)
-        // console.log(err)
+            
+        expect(err).toBeInstanceOf(Error)
+        expect(err.message).toContain('aborted')
     },
     1000 * 10,
 )
 test(
     'works',
     async () => {
-        const res = await fetch('https://framer.com', {
+        const res = await fetch('https://example.com', {
             headers: {
                 accept: 'text/html',
             },
         })
 
         const transform = new HTMLRewriter()
-            .on('a', {
+            .on('body', {
                 element(element) {
-                    element.remove()
+                    element.setAttribute("hello", "world")
                 },
             })
             .transform(res)
         const text = await transform.text()
-        expect(text).toContain('<meta')
-        expect(text).not.toContain('<a ')
-    },
-    1000 * 10,
-)
-test(
-    'works on non-html',
-    async () => {
-        const res = await fetch('https://json.schemastore.org/fly.json', {
-            headers: {
-                // accept: 'text/html',
-            },
-        })
-
-        let resClone = res.clone()
-        const transform = new HTMLRewriter()
-            .on('a', {
-                element(element) {},
-            })
-            .transform(res)
-        const text = await transform.text()
-        // console.log(text)
-        expect(text).toEqual(await resClone.text())
+        expect(text).toContain('<body hello="world"')
     },
     1000 * 10,
 )

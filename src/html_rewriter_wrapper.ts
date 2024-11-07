@@ -1,6 +1,6 @@
 import init, { HTMLRewriter as RawHTMLRewriter } from '../dist/html_rewriter.js'
 
-import { DocumentHandlers, ElementHandlers } from './types'
+import { ElementHandlers } from './types'
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
 
@@ -12,17 +12,12 @@ class HTMLRewriter {
     constructor(options: any = {}) {}
 
     elementHandlers: [selector: string, handlers: ElementHandlers][] = []
-    documentHandlers: DocumentHandlers[] = []
 
     on(selector: string, handlers: ElementHandlers): this {
         this.elementHandlers.push([selector, handlers])
         return this
     }
 
-    onDocument(handlers: DocumentHandlers): this {
-        this.documentHandlers.push(handlers)
-        return this
-    }
     transform(response: Response): Response {
         const body = response.body as ReadableStream<Uint8Array> | null
         // HTMLRewriter doesn't run the end handler if the body is null, so it's
@@ -48,14 +43,10 @@ class HTMLRewriter {
                         // enqueue will throw on empty chunks
                         if (chunk.length !== 0) controller.enqueue(chunk)
                     },
-                    { enableEsiTags: false },
                 )
                 // Add all registered handlers
                 for (const [selector, handlers] of this.elementHandlers) {
                     rewriter.on(selector, handlers)
-                }
-                for (const handlers of this.documentHandlers) {
-                    rewriter.onDocument(handlers)
                 }
 
                 // Pipe the response body to the rewriter

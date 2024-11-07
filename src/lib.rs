@@ -1,5 +1,4 @@
 use js_sys::TypeError;
-use lol_html::html_content::ContentType as NativeContentType;
 use std::cell::Cell;
 use std::convert::Into;
 use std::marker::PhantomData;
@@ -40,15 +39,13 @@ impl Drop for Anchor<'_> {
 struct NativeRefWrap<R> {
     inner_ptr: *mut R,
     poisoned: Rc<Cell<bool>>,
-    stack_ptr: *mut u8,
 }
 
 impl<R> NativeRefWrap<R> {
-    pub fn wrap<I>(inner: &mut I, stack_ptr: *mut u8) -> (Self, Anchor) {
+    pub fn wrap<I>(inner: &mut I) -> (Self, Anchor) {
         let wrap = NativeRefWrap {
             inner_ptr: unsafe { mem::transmute(inner) },
             poisoned: Rc::new(Cell::new(false)),
-            stack_ptr,
         };
 
         let anchor = Anchor::new(Rc::clone(&wrap.poisoned));
@@ -64,12 +61,6 @@ impl<R> NativeRefWrap<R> {
         } else {
             Ok(())
         }
-    }
-
-    pub fn get(&self) -> JsResult<&R> {
-        self.assert_not_poisoned()?;
-
-        Ok(unsafe { self.inner_ptr.as_ref() }.unwrap())
     }
 
     pub fn get_mut(&mut self) -> JsResult<&mut R> {
@@ -94,85 +85,13 @@ impl<T, E: ToString> IntoJsResult<T> for Result<T, E> {
     }
 }
 
-trait IntoNative<T> {
-    fn into_native(self) -> T;
-}
-
-#[wasm_bindgen]
-extern "C" {
-    pub type ContentTypeOptions;
-
-    #[wasm_bindgen(method, getter)]
-    fn html(this: &ContentTypeOptions) -> Option<bool>;
-}
-
-impl IntoNative<NativeContentType> for Option<ContentTypeOptions> {
-    fn into_native(self) -> NativeContentType {
-        match self {
-            Some(opts) => match opts.html() {
-                Some(true) => NativeContentType::Html,
-                Some(false) => NativeContentType::Text,
-                None => NativeContentType::Text,
-            },
-            None => NativeContentType::Text,
-        }
-    }
-}
-
-macro_rules! impl_mutations {
-    ($Ty:ident) => {
-        #[wasm_bindgen]
-        impl $Ty {
-            pub fn before(
-                &mut self,
-                content: &str,
-                content_type: Option<ContentTypeOptions>,
-            ) -> Result<(), JsValue> {
-                self.0
-                    .get_mut()
-                    .map(|o| o.before(content, content_type.into_native()))
-            }
-
-            pub fn after(
-                &mut self,
-                content: &str,
-                content_type: Option<ContentTypeOptions>,
-            ) -> Result<(), JsValue> {
-                self.0
-                    .get_mut()
-                    .map(|o| o.after(content, content_type.into_native()))
-            }
-
-            pub fn replace(
-                &mut self,
-                content: &str,
-                content_type: Option<ContentTypeOptions>,
-            ) -> Result<(), JsValue> {
-                self.0
-                    .get_mut()
-                    .map(|o| o.replace(content, content_type.into_native()))
-            }
-
-            pub fn remove(&mut self) -> Result<(), JsValue> {
-                self.0.get_mut().map(|o| o.remove())
-            }
-
-            #[wasm_bindgen(method, getter)]
-            pub fn removed(&self) -> JsResult<bool> {
-                self.0.get().map(|o| o.removed())
-            }
-        }
-    };
-}
-
 macro_rules! impl_from_native {
     ($Ty:ident --> $JsTy:ident) => {
         impl $JsTy {
             pub(crate) fn from_native<'r>(
                 inner: &'r mut $Ty,
-                stack_ptr: *mut u8,
             ) -> (Self, Anchor<'r>) {
-                let (ref_wrap, anchor) = NativeRefWrap::wrap(inner, stack_ptr);
+                let (ref_wrap, anchor) = NativeRefWrap::wrap(inner);
 
                 ($JsTy(ref_wrap), anchor)
             }
@@ -180,10 +99,6 @@ macro_rules! impl_from_native {
     };
 }
 
-mod comment;
-mod doctype;
-mod document_end;
 mod element;
 mod handlers;
 mod html_rewriter;
-mod text_chunk;

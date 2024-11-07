@@ -5,14 +5,9 @@ const decoder = new TextDecoder();
 class HTMLRewriter {
     constructor(options = {}) {
         this.elementHandlers = [];
-        this.documentHandlers = [];
     }
     on(selector, handlers) {
         this.elementHandlers.push([selector, handlers]);
-        return this;
-    }
-    onDocument(handlers) {
-        this.documentHandlers.push(handlers);
         return this;
     }
     transform(response) {
@@ -38,13 +33,10 @@ class HTMLRewriter {
                     // enqueue will throw on empty chunks
                     if (chunk.length !== 0)
                         controller.enqueue(chunk);
-                }, { enableEsiTags: false });
+                });
                 // Add all registered handlers
                 for (const [selector, handlers] of this.elementHandlers) {
                     rewriter.on(selector, handlers);
-                }
-                for (const handlers of this.documentHandlers) {
-                    rewriter.onDocument(handlers);
                 }
                 // Pipe the response body to the rewriter
                 const reader = body.getReader();

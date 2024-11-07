@@ -1,5 +1,5 @@
 use super::handlers::{
-    DocumentContentHandlers, ElementContentHandlers, HandlerJsErrorWrap, IntoNativeHandlers,
+    ElementContentHandlers, HandlerJsErrorWrap, IntoNativeHandlers,
 };
 use super::*;
 use js_sys::{Function as JsFunction, Uint8Array};
@@ -52,21 +52,12 @@ pub struct HTMLRewriter {
 }
 
 #[wasm_bindgen]
-extern "C" {
-    pub type HTMLRewriterOptions;
-
-    #[wasm_bindgen(structural, method, getter, js_name = enableEsiTags)]
-    pub fn enable_esi_tags(this: &HTMLRewriterOptions) -> Option<bool>;
-}
-
-#[wasm_bindgen]
 impl HTMLRewriter {
     #[wasm_bindgen(constructor)]
-    pub fn new(output_sink: &JsFunction, options: Option<HTMLRewriterOptions>) -> Self {
+    pub fn new(output_sink: &JsFunction) -> Self {
         HTMLRewriter {
             output_sink: Some(JsOutputSink::new(output_sink)),
             stack: vec![0; 1024],
-            enable_esi_tags: options.and_then(|o| o.enable_esi_tags()).unwrap_or(false),
             ..Self::default()
         }
     }
@@ -114,19 +105,8 @@ impl HTMLRewriter {
         let selector = selector.parse::<Selector>().into_js_result()?;
 
         self.selectors.push(selector);
-        let stack_ptr = self.stack_ptr();
         self.element_content_handlers
-            .push(handlers.into_native(stack_ptr));
-
-        Ok(())
-    }
-
-    #[wasm_bindgen(method, js_name=onDocument)]
-    pub fn on_document(&mut self, handlers: DocumentContentHandlers) -> JsResult<()> {
-        self.assert_not_fully_constructed()?;
-        let stack_ptr = self.stack_ptr();
-        self.document_content_handlers
-            .push(handlers.into_native(stack_ptr));
+            .push(handlers.into_native());
 
         Ok(())
     }
