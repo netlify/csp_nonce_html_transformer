@@ -30,24 +30,19 @@ export class HTMLRewriter {
 /**
 */
   end(): void;
-/**
-* @returns {number}
-*/
-  readonly stackPtr: number;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly __wbg_element_free: (a: number) => void;
-  readonly element_setAttribute: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly __wbg_htmlrewriter_free: (a: number) => void;
   readonly htmlrewriter_new: (a: number) => number;
   readonly htmlrewriter_on: (a: number, b: number, c: number, d: number) => void;
   readonly htmlrewriter_write: (a: number, b: number, c: number) => void;
   readonly htmlrewriter_end: (a: number) => void;
-  readonly htmlrewriter_stack_ptr: (a: number) => number;
+  readonly __wbg_element_free: (a: number) => void;
+  readonly element_setAttribute: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly __wbindgen_malloc: (a: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number) => number;
   readonly __wbindgen_exn_store: (a: number) => void;

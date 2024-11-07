@@ -47,8 +47,6 @@ pub struct HTMLRewriter {
     output_sink: Option<JsOutputSink>,
     inner: Option<NativeHTMLRewriter<'static, JsOutputSink>>,
     inner_constructed: bool,
-    stack: Vec<u8>,
-    enable_esi_tags: bool,
 }
 
 #[wasm_bindgen]
@@ -57,7 +55,6 @@ impl HTMLRewriter {
     pub fn new(output_sink: &JsFunction) -> Self {
         HTMLRewriter {
             output_sink: Some(JsOutputSink::new(output_sink)),
-            stack: vec![0; 1024],
             ..Self::default()
         }
     }
@@ -85,7 +82,6 @@ impl HTMLRewriter {
                         .collect(),
 
                     document_content_handlers: self.document_content_handlers.drain(..).collect(),
-                    enable_esi_tags: self.enable_esi_tags,
                     ..Settings::default()
                 };
 
@@ -125,10 +121,5 @@ impl HTMLRewriter {
             .unwrap()
             .end()
             .map_err(rewriting_error_to_js)
-    }
-
-    #[wasm_bindgen(method, getter=stackPtr)]
-    pub fn stack_ptr(&mut self) -> *mut u8 {
-        self.stack.as_mut_ptr()
     }
 }
