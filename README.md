@@ -15,3 +15,10 @@ be allowed to run.
 
 If the response already has a CSP, this will merge the directives it generates
 with your the directives.
+
+
+## License
+
+This project is licensed under the BSD 3-Clause license.
+
+`csp_nonce_html_transformer` is based on [remorses/htmlrewriter](https://github.com/remorses/htmlrewriter) which is BSD 3-Clause licensed.
