@@ -353,7 +353,7 @@ function __wbg_get_imports() {
     const ret = getStringFromWasm0(arg0, arg1);
     return ret;
   };
-  imports.wbg.__wbg_element_78b5cf192979da0f = function (arg0) {
+  imports.wbg.__wbg_element_9f7a29ae173a1783 = function (arg0) {
     const ret = arg0.element;
     return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
   };
@@ -471,7 +471,10 @@ async function __wbg_init(module_or_path) {
   }
 
   if (typeof module_or_path === "undefined") {
-    module_or_path = new URL("html_rewriter_bg.wasm", import.meta.url);
+    module_or_path = new URL(
+      "csp_nonce_html_transformer_bg.wasm",
+      import.meta.url,
+    );
   }
   const imports = __wbg_get_imports();
 

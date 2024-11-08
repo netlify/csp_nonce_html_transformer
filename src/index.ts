@@ -5,36 +5,36 @@ import { Element } from "./types.d.ts";
 type Params = {
   /**
    * When true, uses the `Content-Security-Policy-Report-Only` header instead
-   * of the `Content-Security-Policy` header. Setting to `true` is useful for 
+   * of the `Content-Security-Policy` header. Setting to `true` is useful for
    * testing the CSP with real production traffic without actually blocking resources.
    */
   reportOnly?: boolean;
   /**
-   * The relative or absolute URL to report any violations. If left undefined, 
-   * violations will not be reported anywhere, which this plugin deploys. If 
-   * the response already has a `report-uri` directive defined in its CSP header, 
+   * The relative or absolute URL to report any violations. If left undefined,
+   * violations will not be reported anywhere, which this plugin deploys. If
+   * the response already has a `report-uri` directive defined in its CSP header,
    * then that value will take precedence.
    */
   reportUri?: string;
   /**
-   * When true, adds `'unsafe-eval'` to the CSP for easier adoption. Set to 
-   * `false` to have a safer policy if your code and code dependencies does 
+   * When true, adds `'unsafe-eval'` to the CSP for easier adoption. Set to
+   * `false` to have a safer policy if your code and code dependencies does
    *  not use `eval()`.
    */
   unsafeEval?: boolean;
   /**
    * A number from 0 to 1, but 0 to 100 is also supported, along with a trailing %.
-   * 
+   *
    * You can ramp up or ramp down the inclusion of the `Content-Security-Policy`
    * header by setting this to a value between `0` and `1`.
-   * 
-   * Any value in between `0` and `1` will include the nonce in randomly distributed traffic. 
-   * 
+   *
+   * Any value in between `0` and `1` will include the nonce in randomly distributed traffic.
+   *
    * For example, a value of `0.25` will put the new directives in the `Content-Security-Policy`
    * header for 25% of responses. The other 75% of responses will have the new directives
    * in the `Content-Security-Policy-Report-Only` header.
    */
-  nonceDistribution?: string;
+  distribution?: string;
 };
 
 const hexOctets: string[] = [];
@@ -45,17 +45,19 @@ for (let i = 0; i <= 255; ++i) {
 }
 
 function uInt8ArrayToBase64String(input: Uint8Array): string {
-  let res = '';
+  let res = "";
 
   for (let i = 0; i < input.length; i++) {
-    res += String.fromCharCode(parseInt(hexOctets[input[i]], 16))
+    res += String.fromCharCode(parseInt(hexOctets[input[i]], 16));
   }
 
   return btoa(res);
 }
 
 export async function csp(response: Response, params?: Params) {
-  const isHTMLResponse = response.headers.get("content-type")?.startsWith("text/html");
+  const isHTMLResponse = response.headers.get("content-type")?.startsWith(
+    "text/html",
+  );
   if (!isHTMLResponse) {
     return response;
   }
@@ -64,14 +66,13 @@ export async function csp(response: Response, params?: Params) {
     ? "content-security-policy-report-only"
     : "content-security-policy";
 
-  // nonceDistribution is a number from 0 to 1,
+  // distribution is a number from 0 to 1,
   // but 0 to 100 is also supported, along with a trailing %
-  const distribution = params?.nonceDistribution;
+  const distribution = params?.distribution;
   if (distribution) {
-    const threshold =
-      distribution.endsWith("%") || parseFloat(distribution) > 1
-        ? Math.max(parseFloat(distribution) / 100, 0)
-        : Math.max(parseFloat(distribution), 0);
+    const threshold = distribution.endsWith("%") || parseFloat(distribution) > 1
+      ? Math.max(parseFloat(distribution) / 100, 0)
+      : Math.max(parseFloat(distribution), 0);
     const random = Math.random();
     // if a roll of the dice is greater than our threshold...
     if (random > threshold && threshold <= 1) {
@@ -85,7 +86,9 @@ export async function csp(response: Response, params?: Params) {
     }
   }
 
-  const nonce = uInt8ArrayToBase64String(crypto.getRandomValues(new Uint8Array(24)));
+  const nonce = uInt8ArrayToBase64String(
+    crypto.getRandomValues(new Uint8Array(24)),
+  );
   // `'strict-dynamic'` allows scripts to be loaded from trusted scripts
   // when `'strict-dynamic'` is present, `'unsafe-inline' 'self' https: http:` is ignored by browsers
   // `'unsafe-inline' 'self' https: http:` is a compat check for browsers that don't support `strict-dynamic`
@@ -122,7 +125,9 @@ export async function csp(response: Response, params?: Params) {
     if (!directives.find((d) => d.startsWith("script-src "))) {
       directives.push(scriptSrc);
     }
-    if (params?.reportUri && !directives.find((d) => d.startsWith("report-uri"))) {
+    if (
+      params?.reportUri && !directives.find((d) => d.startsWith("report-uri"))
+    ) {
       directives.push(`report-uri ${params.reportUri}`);
     }
     const value = directives.join("; ");
@@ -131,7 +136,7 @@ export async function csp(response: Response, params?: Params) {
     // make a new ruleset of directives if no CSP present
     const value = [scriptSrc];
     if (params?.reportUri) {
-      value.push(`report-uri ${params.reportUri}`)
+      value.push(`report-uri ${params.reportUri}`);
     }
     response.headers.set(header, value.join("; "));
   }
@@ -148,4 +153,4 @@ export async function csp(response: Response, params?: Params) {
       },
     })
     .transform(response);
-};
+}

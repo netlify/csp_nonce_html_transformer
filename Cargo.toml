@@ -1,7 +1,5 @@
 [package]
-name = "html-rewriter"
-version = "0.3.0"
-authors = ["Ivan Nikulin <inikulin@cloudflare.com>"]
+name = "csp_nonce_html_transformer"
 edition = "2018"
 
 [dependencies]
