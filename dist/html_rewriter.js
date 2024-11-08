@@ -154,13 +154,6 @@ function takeFromExternrefTable0(idx) {
     return value;
 }
 
-function passArray8ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 1, 1) >>> 0;
-    getUint8ArrayMemory0().set(arg, ptr / 1);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
-}
-
 function isLikeNone(x) {
     return x === undefined || x === null;
 }
@@ -169,6 +162,13 @@ function addToExternrefTable0(obj) {
     const idx = wasm.__externref_table_alloc();
     wasm.__wbindgen_export_2.set(idx, obj);
     return idx;
+}
+
+function passArray8ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 1, 1) >>> 0;
+    getUint8ArrayMemory0().set(arg, ptr / 1);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
 }
 
 function handleError(f, args) {
@@ -316,13 +316,13 @@ function __wbg_get_imports() {
         const ret = getStringFromWasm0(arg0, arg1);
         return ret;
     };
-    imports.wbg.__wbg_element_new = function(arg0) {
-        const ret = Element.__wrap(arg0);
-        return ret;
-    };
     imports.wbg.__wbg_element_3f98b31ffd047518 = function(arg0) {
         const ret = arg0.element;
         return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+    };
+    imports.wbg.__wbg_element_new = function(arg0) {
+        const ret = Element.__wrap(arg0);
+        return ret;
     };
     imports.wbg.__wbg_call_3bfa248576352471 = function() { return handleError(function (arg0, arg1, arg2) {
         const ret = arg0.call(arg1, arg2);

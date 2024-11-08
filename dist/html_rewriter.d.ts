@@ -30,13 +30,13 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_element_free: (a: number, b: number) => void;
+  readonly element_setAttribute: (a: number, b: number, c: number, d: number, e: number) => Array;
   readonly __wbg_htmlrewriter_free: (a: number, b: number) => void;
   readonly htmlrewriter_new: (a: number) => number;
   readonly htmlrewriter_on: (a: number, b: number, c: number, d: number) => Array;
   readonly htmlrewriter_write: (a: number, b: number, c: number) => Array;
   readonly htmlrewriter_end: (a: number) => Array;
-  readonly __wbg_element_free: (a: number, b: number) => void;
-  readonly element_setAttribute: (a: number, b: number, c: number, d: number, e: number) => Array;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;

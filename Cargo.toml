@@ -22,3 +22,5 @@ wasm-opt = ["-O3", "--enable-bulk-memory"]
 
 [profile.release]
 lto = true
+codegen-units = 1
+panic = "abort"
