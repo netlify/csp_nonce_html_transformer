@@ -22,11 +22,11 @@ type Params = {
    *  not use `eval()`.
    */
   unsafeEval?: boolean;
-  strictDynamic?: boolean,
-  unsafeInline?: boolean,
-  self?: boolean,
-  https?: boolean,
-  http?: boolean,
+  strictDynamic?: boolean;
+  unsafeInline?: boolean;
+  self?: boolean;
+  https?: boolean;
+  http?: boolean;
   /**
    * A number from 0 to 1, but 0 to 100 is also supported, along with a trailing %.
    *
