@@ -19,3 +19,6 @@ crate-type = ["cdylib", "rlib"]
 wasm-opt = ["--enable-bulk-memory"]
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = ["-Os", "--enable-bulk-memory"]
+
+[profile.release]
+lto = true
