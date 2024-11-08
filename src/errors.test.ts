@@ -1,73 +1,132 @@
 import {
-  assertInstanceOf,
+  assertMatch,
   assertStrictEquals,
-  assertStringIncludes,
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
-// import { HTMLRewriter } from "./index.ts";
+import {csp} from "./index.ts";
 
 Deno.test({
-  name: "errors",
+  name: "non-html responses are returned untouched",
   fn: async () => {
-    const {HTMLRewriter} = await import("./index.ts");
-    const res = await fetch("https://example.com");
-
-    const transform = new HTMLRewriter()
-      .on("a", {
-        element(_element) {
-          throw new Error("error");
-        },
-      })
-      .transform(res);
-    const err = await transform.text().catch((e) => e);
-    assertInstanceOf(err, Error);
-    assertStrictEquals(err.message, "error");
-    if (res.body) {
-      await res.body.cancel();
-    }
+    const response = new Response('meow', {headers: {'content-type': 'text/plain'}})
+    
+    const result = await csp(response);
+    assertStrictEquals(response, result);
+    await response.body?.cancel()
   },
 });
 Deno.test({
-  name: "abort",
+  name: "html responses are modified",
   fn: async () => {
-    const {HTMLRewriter} = await import("./index.ts");
-    const abortController = new AbortController();
-    const res = await fetch("https://example.com", {
-      signal: abortController.signal,
-    });
-    abortController.abort();
+    const response = new Response('<script>', {headers: {
+      'content-type': 'text/html; charset=utf-8'
+    }})
 
-    const err = await new HTMLRewriter()
-      .on("body", {
-        element(e) {
-          e.setAttribute("test", "one");
-        },
-      })
-      .transform(res)
-      .text()
-      .catch((e) => e);
-
-    assertInstanceOf(err, Error);
-    assertStringIncludes(err.message, "aborted");
+    const result = await csp(response)
+    assertMatch(
+      result.headers.get('content-security-policy')!,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:$/
+    );
+    assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
 });
 Deno.test({
-  name: "works",
+  name: "already existing csp directives are kept",
   fn: async () => {
-    const {HTMLRewriter} = await import("./index.ts");
-    const res = await fetch("https://example.com", {
-      headers: {
-        accept: "text/html",
-      },
-    });
+    const response = new Response('<script>', {headers: {
+      'content-type': 'text/html; charset=utf-8',
+      'content-security-policy': "img-src 'self' blob: data:; script-src 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='"
+    }})
 
-    const transform = new HTMLRewriter()
-      .on("body", {
-        element(element) {
-          element.setAttribute("hello", "world");
-        },
-      })
-      .transform(res);
-    const text = await transform.text();
-    assertStringIncludes(text, '<body hello="world"');
+    const result = await csp(response)
+    assertMatch(
+      result.headers.get('content-security-policy')!,
+      /^img-src 'self' blob: data:; script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http: 'sha256-\/Cb4VxgL2aVP0MVDvbP0DgEOUv\+MeNQmZX4yXHkn\/c0='/
+    );
+    assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
+  },
+});
+Deno.test({
+  name: "nonceDistribution set to 0 and content-security-policy header set will cause the new directives to be added to content-security-policy-report-only",
+  fn: async () => {
+    const response = new Response('<script>', {headers: {
+      'content-type': 'text/html; charset=utf-8',
+      'content-security-policy': "img-src 'self' blob: data:; script-src 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='"
+    }})
+
+    const result = await csp(response, {nonceDistribution:'0'})
+    assertStrictEquals(
+      result.headers.get('content-security-policy')!,
+      "img-src 'self' blob: data:; script-src 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='"
+    );
+    assertMatch(
+      result.headers.get('content-security-policy-report-only')!,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:$/
+    );
+    assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
+  },
+});
+Deno.test({
+  name: "nonceDistribution set to 0% and content-security-policy header set will cause the new directives to be added to content-security-policy-report-only",
+  fn: async () => {
+    const response = new Response('<script>', {headers: {
+      'content-type': 'text/html; charset=utf-8',
+      'content-security-policy': "img-src 'self' blob: data:; script-src 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='"
+    }})
+
+    const result = await csp(response, {nonceDistribution:'0%'})
+    assertStrictEquals(
+      result.headers.get('content-security-policy')!,
+      "img-src 'self' blob: data:; script-src 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='"
+    );
+    assertMatch(
+      result.headers.get('content-security-policy-report-only')!,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:$/
+    );
+    assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
+  },
+});
+Deno.test({
+  name: "params.reportOnly set to true will cause the new directives to be added to content-security-policy-report-only",
+  fn: async () => {
+    const response = new Response('<script>', {headers: {
+      'content-type': 'text/html; charset=utf-8',
+    }})
+
+    const result = await csp(response, {reportOnly:true})
+    assertMatch(
+      result.headers.get('content-security-policy-report-only')!,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:$/
+    );
+    assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
+  },
+});
+Deno.test({
+  name: "params.unsafeEval set to true will cause unsafeEval to be added to the directives",
+  fn: async () => {
+    const response = new Response('<script>', {headers: {
+      'content-type': 'text/html; charset=utf-8',
+    }})
+
+    const result = await csp(response, {unsafeEval:true})
+    assertMatch(
+      result.headers.get('content-security-policy')!,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'unsafe-eval' 'self' https: http:$/
+    );
+    assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
+  },
+});
+Deno.test({
+  name: "params.reportUri set to true will cause reportUri to be added to the directives",
+  fn: async () => {
+    const response = new Response('<script>', {headers: {
+      'content-type': 'text/html; charset=utf-8',
+    }})
+
+    const result = await csp(response, {reportUri:'https://example.com'})
+    assertMatch(
+      result.headers.get('content-security-policy')!,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:; report-uri https:\/\/example\.com$/
+    );
+    assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
 });

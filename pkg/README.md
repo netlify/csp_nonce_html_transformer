@@ -1,19 +1,9 @@
-# csp-html-rewriter
+# csp-nonce
 
-## Usage
+Use a [nonce](https://content-security-policy.com/nonce/) for the `script-src` directive of your Content Security Policy (CSP) to help prevent [cross-site scripting (XSS)](https://developer.mozilla.org/en-US/docs/Web/Security/Types_of_attacks#cross-site_scripting_xss) attacks.
 
-```ts
-import { HTMLRewriter } from "htmlrewriter";
+This functions takes a response and will add a header and transforms the HTML response body to contain a unique nonce on every request.
 
-const rewriter = new HTMLRewriter();
+Scripts that do not contain a matching `nonce` attribute, or that were not created from a trusted script (see [strict-dynamic](https://content-security-policy.com/strict-dynamic/)), will not be allowed to run.
 
-rewriter.on("a", {
-  element(element) {
-    element.setAttribute("href", "https://www.baidu.com");
-  },
-});
-const res = rewriter.transform(
-  new Response('<a href="https://www.google.com">google</a>'),
-);
-console.log(await res.text());
-```
+If the response already has a CSP, this will merge the directives it generates with your the directives.
