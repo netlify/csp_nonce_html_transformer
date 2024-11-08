@@ -28,7 +28,7 @@ Deno.test({
     const result = await csp(response);
     assertMatch(
       result.headers.get("content-security-policy")!,
-      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:$/,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}'$/,
     );
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
@@ -47,7 +47,7 @@ Deno.test({
     const result = await csp(response);
     assertMatch(
       result.headers.get("content-security-policy")!,
-      /^img-src 'self' blob: data:; script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http: 'sha256-\/Cb4VxgL2aVP0MVDvbP0DgEOUv\+MeNQmZX4yXHkn\/c0='/,
+      /^img-src 'self' blob: data:; script-src 'nonce-[-A-Za-z0-9+/]{32}' 'sha256-\/Cb4VxgL2aVP0MVDvbP0DgEOUv\+MeNQmZX4yXHkn\/c0='/,
     );
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
@@ -71,7 +71,7 @@ Deno.test({
     );
     assertMatch(
       result.headers.get("content-security-policy-report-only")!,
-      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:$/,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}'$/,
     );
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
@@ -95,7 +95,7 @@ Deno.test({
     );
     assertMatch(
       result.headers.get("content-security-policy-report-only")!,
-      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:$/,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}'$/,
     );
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
@@ -113,7 +113,7 @@ Deno.test({
     const result = await csp(response, { reportOnly: true });
     assertMatch(
       result.headers.get("content-security-policy-report-only")!,
-      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:$/,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}'$/,
     );
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
@@ -131,7 +131,7 @@ Deno.test({
     const result = await csp(response, { unsafeEval: true });
     assertMatch(
       result.headers.get("content-security-policy")!,
-      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'unsafe-eval' 'self' https: http:$/,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'unsafe-eval'$/,
     );
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
@@ -149,7 +149,7 @@ Deno.test({
     const result = await csp(response, { reportUri: "https://example.com" });
     assertMatch(
       result.headers.get("content-security-policy")!,
-      /^script-src 'nonce-[-A-Za-z0-9+/]{32}' 'strict-dynamic' 'unsafe-inline' 'self' https: http:; report-uri https:\/\/example\.com$/,
+      /^script-src 'nonce-[-A-Za-z0-9+/]{32}'; report-uri https:\/\/example\.com$/,
     );
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
