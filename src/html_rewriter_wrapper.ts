@@ -74,7 +74,9 @@ class HTMLRewriter {
   }
 }
 
-export function HTMLRewriterWrapper(initPromise: typeof HTMLRewriter.initPromise) {
+export function HTMLRewriterWrapper(
+  initPromise: typeof HTMLRewriter.initPromise,
+) {
   HTMLRewriter.initPromise = initPromise;
   return HTMLRewriter;
 }

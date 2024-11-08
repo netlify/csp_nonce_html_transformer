@@ -57,6 +57,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
 
 [[package]]
+name = "csp_nonce_html_transformer"
+version = "0.0.0"
+dependencies = [
+ "js-sys",
+ "lol_html",
+ "serde",
+ "serde-wasm-bindgen",
+ "thiserror 2.0.0",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "cssparser"
 version = "0.27.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -147,18 +159,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43a3c133739dddd0d2990f9a4bdf8eb4b21ef50e4851ca85ab661199821d510e"
 dependencies = [
  "ahash",
-]
-
-[[package]]
-name = "html-rewriter"
-version = "0.3.0"
-dependencies = [
- "js-sys",
- "lol_html",
- "serde",
- "serde-wasm-bindgen",
- "thiserror 2.0.0",
- "wasm-bindgen",
 ]
 
 [[package]]
