@@ -22,6 +22,11 @@ type Params = {
    *  not use `eval()`.
    */
   unsafeEval?: boolean;
+  strictDynamic?: boolean,
+  unsafeInline?: boolean,
+  self?: boolean,
+  https?: boolean,
+  http?: boolean,
   /**
    * A number from 0 to 1, but 0 to 100 is also supported, along with a trailing %.
    *
@@ -89,18 +94,15 @@ export async function csp(response: Response, params?: Params) {
   const nonce = uInt8ArrayToBase64String(
     crypto.getRandomValues(new Uint8Array(24)),
   );
-  // `'strict-dynamic'` allows scripts to be loaded from trusted scripts
-  // when `'strict-dynamic'` is present, `'unsafe-inline' 'self' https: http:` is ignored by browsers
-  // `'unsafe-inline' 'self' https: http:` is a compat check for browsers that don't support `strict-dynamic`
-  // https://content-security-policy.com/strict-dynamic/
+
   const rules = [
     `'nonce-${nonce}'`,
-    `'strict-dynamic'`,
-    `'unsafe-inline'`,
     params?.unsafeEval && `'unsafe-eval'`,
-    `'self'`,
-    `https:`,
-    `http:`,
+    params?.strictDynamic && `'strict-dynamic'`,
+    params?.unsafeInline && `'unsafe-inline'`,
+    params?.self && `'self'`,
+    params?.https && `https:`,
+    params?.http && `http:`,
   ].filter(Boolean);
   const scriptSrc = `script-src ${rules.join(" ")}`;
 
