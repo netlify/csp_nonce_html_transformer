@@ -1,0 +1,18 @@
+{
+  "name": "html-rewriter",
+  "type": "module",
+  "collaborators": [
+    "Ivan Nikulin <inikulin@cloudflare.com>"
+  ],
+  "version": "0.3.0",
+  "files": [
+    "html_rewriter_bg.wasm",
+    "html_rewriter.js",
+    "html_rewriter.d.ts"
+  ],
+  "main": "html_rewriter.js",
+  "types": "html_rewriter.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

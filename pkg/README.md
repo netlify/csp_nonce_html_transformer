@@ -1,4 +1,4 @@
-# html-rewriter
+# csp-html-rewriter
 
 ## Usage
 
