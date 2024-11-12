@@ -2,7 +2,15 @@ import {
   assertMatch,
   assertStrictEquals,
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { csp } from "./index.ts";
+import { csp } from "../src/index.ts";
+
+import * as cheerio from "https://cdn.jsdelivr.net/npm/cheerio/+esm";
+
+import cspParser from "https://cdn.jsdelivr.net/npm/content-security-policy-parser@0.6.0/script/mod.js/+esm";
+import { assertEquals } from "https://deno.land/std@0.224.0/assert/assert_equals.ts";
+import { assert } from "https://deno.land/std@0.224.0/assert/assert.ts";
+import { assertArrayIncludes } from "https://deno.land/std@0.224.0/assert/assert_array_includes.ts";
+const parseContentSecurityPolicy = cspParser.default;
 
 Deno.test({
   name: "non-html responses are returned untouched",
@@ -13,24 +21,46 @@ Deno.test({
 
     const result = await csp(response);
     assertStrictEquals(response, result);
+    assertEquals(response.headers.has('content-security-policy'), false)
     await response.body?.cancel();
+  },
+});
+
+Deno.test({
+  name: "non-html (png) responses masquerading as html are returned with identical bodies",
+  fn: async () => {
+    const response = new Response(Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 55, 110, 249, 36, 0, 0, 0, 10, 73, 68, 65, 84, 120, 1, 99, 96, 0, 0, 0, 2, 0, 1, 115, 117, 1, 24, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130]), {
+      headers: { "content-type": "text/html" },
+    });
+    const originBody = await response.clone().arrayBuffer()
+
+    const result = await csp(response);
+    assertEquals(originBody, await result.arrayBuffer());
   },
 });
 Deno.test({
   name: "html responses are modified",
   fn: async () => {
-    const response = new Response("<script>", {
+    const response = new Response(await Deno.readFile('./tests/fixtures/basic.html'), {
       headers: {
         "content-type": "text/html; charset=utf-8",
       },
     });
 
     const result = await csp(response);
-    assertMatch(
-      result.headers.get("content-security-policy")!,
-      /^script-src 'nonce-[-A-Za-z0-9+/]{32}'$/,
-    );
-    assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
+    const policy: Map<string, string[]> = parseContentSecurityPolicy(response.headers.get("content-security-policy")!);
+
+    const script = policy.get("script-src")!;
+    assert(script.find((value) => /'nonce-[-A-Za-z0-9+/]{32}'/.test(value)));
+
+    let $ = cheerio.load(await result.text());
+  
+    const scriptsrc = policy.get("script-src")!;
+    const nonce = scriptsrc.find((v) => v.startsWith("'nonce-"))?.slice("'nonce-".length, -1);
+    const scripts = $("script,link[rel=preload][as=script]");
+    for (const script of scripts) {
+      assertEquals(script.attribs.nonce, nonce);
+    }
   },
 });
 Deno.test({
@@ -40,15 +70,21 @@ Deno.test({
       headers: {
         "content-type": "text/html; charset=utf-8",
         "content-security-policy":
-          "img-src 'self' blob: data:; script-src 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='",
+          "img-src 'self' blob: data:; script-src 'strict-dynamic' 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='",
       },
     });
 
     const result = await csp(response);
-    assertMatch(
-      result.headers.get("content-security-policy")!,
-      /^img-src 'self' blob: data:; script-src 'nonce-[-A-Za-z0-9+/]{32}' 'sha256-\/Cb4VxgL2aVP0MVDvbP0DgEOUv\+MeNQmZX4yXHkn\/c0='/,
+    const policy: Map<string, string[]> = parseContentSecurityPolicy(
+      response.headers.get("content-security-policy") || ""
     );
+
+    assertEquals(policy.get("img-src"), ["'self'", "blob:", "data:"]);
+    const script = policy.get("script-src")!;
+    const nonce = /'nonce-[-A-Za-z0-9+/]{32}'/;
+    assert(script.find((value) => nonce.test(value)));
+    assertEquals(script.includes("'strict-dynamic'"), true);
+    assertArrayIncludes(script, ["'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='"]);
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
 });
@@ -154,3 +190,5 @@ Deno.test({
     assertMatch(await result.text(), /^\<script nonce="[-A-Za-z0-9+/]{32}">$/);
   },
 });
+
+
