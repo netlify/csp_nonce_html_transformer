@@ -13,6 +13,29 @@ import { assertArrayIncludes } from "https://deno.land/std@0.224.0/assert/assert
 const parseContentSecurityPolicy = cspParser.default;
 
 Deno.test({
+  name: "big html test",
+  fn: async () => {
+    let response = await fetch("https://html.spec.whatwg.org/");
+    response = new Response(response.body, response);
+
+    const result = await csp(response);
+    const policy: Map<string, string[]> = parseContentSecurityPolicy(result.headers.get("content-security-policy")!);
+  
+    const script = policy.get("script-src")!;
+    assert(script.find((value) => /'nonce-[-A-Za-z0-9+/]{32}'/.test(value)));
+
+    let $ = cheerio.load(await result.text());
+  
+    const scriptsrc = policy.get("script-src")!;
+    const nonce = scriptsrc.find((v) => v.startsWith("'nonce-"))?.slice("'nonce-".length, -1);
+    const scripts = $("script,link[rel=preload][as=script]");
+    for (const script of scripts) {
+      assertEquals(script.attribs.nonce, nonce);
+    }
+  },
+});
+
+Deno.test({
   name: "non-html responses are returned untouched",
   fn: async () => {
     const response = new Response("meow", {
@@ -21,7 +44,7 @@ Deno.test({
 
     const result = await csp(response);
     assertStrictEquals(response, result);
-    assertEquals(response.headers.has('content-security-policy'), false)
+    assertEquals(result.headers.has('content-security-policy'), false)
     await response.body?.cancel();
   },
 });
@@ -48,7 +71,7 @@ Deno.test({
     });
 
     const result = await csp(response);
-    const policy: Map<string, string[]> = parseContentSecurityPolicy(response.headers.get("content-security-policy")!);
+    const policy: Map<string, string[]> = parseContentSecurityPolicy(result.headers.get("content-security-policy")!);
 
     const script = policy.get("script-src")!;
     assert(script.find((value) => /'nonce-[-A-Za-z0-9+/]{32}'/.test(value)));
@@ -76,7 +99,7 @@ Deno.test({
 
     const result = await csp(response);
     const policy: Map<string, string[]> = parseContentSecurityPolicy(
-      response.headers.get("content-security-policy") || ""
+      result.headers.get("content-security-policy") || ""
     );
 
     assertEquals(policy.get("img-src"), ["'self'", "blob:", "data:"]);
