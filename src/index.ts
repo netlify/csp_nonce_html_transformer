@@ -59,13 +59,14 @@ function uInt8ArrayToBase64String(input: Uint8Array): string {
   return btoa(res);
 }
 
-export async function csp(response: Response, params?: Params) {
-  const isHTMLResponse = response.headers.get("content-type")?.startsWith(
+export async function csp(originalResponse: Response, params?: Params) {
+  const isHTMLResponse = originalResponse.headers.get("content-type")?.startsWith(
     "text/html",
   );
   if (!isHTMLResponse) {
-    return response;
+    return originalResponse;
   }
+  const response = new Response(originalResponse.body, originalResponse)
 
   let header = params && params.reportOnly
     ? "content-security-policy-report-only"
