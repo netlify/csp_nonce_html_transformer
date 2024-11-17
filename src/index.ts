@@ -1,5 +1,5 @@
 import init from "../pkg/html_rewriter.js";
-import { HTMLRewriterWrapper } from "./html_rewriter_wrapper.ts";
+import { HTMLRewriter } from "./html_rewriter_wrapper.ts";
 import { Element } from "./types.d.ts";
 
 type Params = {
@@ -146,10 +146,7 @@ export async function csp(originalResponse: Response, params?: Params) {
   }
 
   const querySelectors = ["script", 'link[rel="preload"][as="script"]'];
-  const HTMLRewriter: ReturnType<typeof HTMLRewriterWrapper> =
-    HTMLRewriterWrapper(
-      await init(),
-    );
+  await init();
   return new HTMLRewriter()
     .on(querySelectors.join(","), {
       element(element: Element) {
