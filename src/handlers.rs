@@ -15,27 +15,6 @@ pub struct HandlerJsErrorWrap(pub JsValue);
 unsafe impl Send for HandlerJsErrorWrap {}
 unsafe impl Sync for HandlerJsErrorWrap {}
 
-// macro_rules! make_handler {
-//     ($handler:ident, $JsArgType:ident, $this:ident, $stack_ptr:ident) => {
-//         move |arg: &mut _| {
-//             let (js_arg, anchor) = $JsArgType::from_native(arg);
-//             let js_arg = JsValue::from(js_arg);
-
-//             let res = match $handler.call1(&$this, &js_arg) {
-//                 Ok(_) => {
-//                     Ok(())
-//                 }
-//                 Err(e) => Err(HandlerJsErrorWrap(e).into()),
-//             };
-
-//             mem::drop(anchor);
-
-//             res
-//         }
-//     };
-// }
-// pub(crate) use make_handler;
-
 pub trait IntoNativeHandlers<T> {
     fn into_native(self) -> T;
 }
@@ -46,23 +25,12 @@ extern "C" {
 
     #[wasm_bindgen(method, getter)]
     fn element(this: &ElementContentHandlers) -> Option<JsFunction>;
-
-    #[wasm_bindgen(method, getter)]
-    fn comments(this: &ElementContentHandlers) -> Option<JsFunction>;
-
-    #[wasm_bindgen(method, getter)]
-    fn text(this: &ElementContentHandlers) -> Option<JsFunction>;
 }
 
 impl IntoNativeHandlers<NativeElementContentHandlers<'static>> for ElementContentHandlers {
     fn into_native(self) -> NativeElementContentHandlers<'static> {
         let handlers: Rc<JsValue> = Rc::new((&self).into());
         let mut native = NativeElementContentHandlers::default();
-
-        // if let Some(handler) = self.element() {
-        //     let this = Rc::clone(&handlers);
-        //     native = native.element(make_handler!(handler, Element, this, stack_ptr));
-        // }
 
         if let Some(handler) = self.element() {
             let this = Rc::clone(&handlers);
