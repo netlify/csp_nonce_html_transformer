@@ -3,60 +3,10 @@
 export class Element {
   free(): void;
   /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  before(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  after(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  replace(content: string, content_type?: any): void;
-  remove(): void;
-  /**
-   * @param {string} name
-   * @returns {any}
-   */
-  getAttribute(name: string): any;
-  /**
-   * @param {string} name
-   * @returns {boolean}
-   */
-  hasAttribute(name: string): boolean;
-  /**
    * @param {string} name
    * @param {string} value
    */
   setAttribute(name: string, value: string): void;
-  /**
-   * @param {string} name
-   */
-  removeAttribute(name: string): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  prepend(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  append(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  setInnerContent(content: string, content_type?: any): void;
-  removeAndKeepContent(): void;
-  readonly attributes: any;
-  readonly namespaceURI: any;
-  readonly removed: boolean;
-  tagName: string;
 }
 export class HTMLRewriter {
   free(): void;

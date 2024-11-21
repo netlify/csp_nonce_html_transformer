@@ -165,10 +165,10 @@ function isLikeNone(x) {
   return x === undefined || x === null;
 }
 
-function _assertBoolean(n) {
-  if (typeof n !== "boolean") {
-    throw new Error(`expected a boolean argument, found ${typeof n}`);
-  }
+function addToExternrefTable0(obj) {
+  const idx = wasm.__externref_table_alloc();
+  wasm.__wbindgen_export_2.set(idx, obj);
+  return idx;
 }
 
 function logError(f, args) {
@@ -192,10 +192,10 @@ function logError(f, args) {
   }
 }
 
-function addToExternrefTable0(obj) {
-  const idx = wasm.__externref_table_alloc();
-  wasm.__wbindgen_export_2.set(idx, obj);
-  return idx;
+function _assertBoolean(n) {
+  if (typeof n !== "boolean") {
+    throw new Error(`expected a boolean argument, found ${typeof n}`);
+  }
 }
 
 function _assertNum(n) {
@@ -255,198 +255,6 @@ export class Element {
     wasm.__wbg_element_free(ptr, 0);
   }
   /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  before(content, content_type) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      content,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_before(
-      this.__wbg_ptr,
-      ptr0,
-      len0,
-      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
-    );
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  after(content, content_type) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      content,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_after(
-      this.__wbg_ptr,
-      ptr0,
-      len0,
-      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
-    );
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  replace(content, content_type) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      content,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_replace(
-      this.__wbg_ptr,
-      ptr0,
-      len0,
-      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
-    );
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  remove() {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ret = wasm.element_remove(this.__wbg_ptr);
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
-   * @returns {boolean}
-   */
-  get removed() {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ret = wasm.element_removed(this.__wbg_ptr);
-    if (ret[2]) {
-      throw takeFromExternrefTable0(ret[1]);
-    }
-    return ret[0] !== 0;
-  }
-  /**
-   * @returns {string}
-   */
-  get tagName() {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-      if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-      _assertNum(this.__wbg_ptr);
-      const ret = wasm.element_tag_name(this.__wbg_ptr);
-      var ptr1 = ret[0];
-      var len1 = ret[1];
-      if (ret[3]) {
-        ptr1 = 0;
-        len1 = 0;
-        throw takeFromExternrefTable0(ret[2]);
-      }
-      deferred2_0 = ptr1;
-      deferred2_1 = len1;
-      return getStringFromWasm0(ptr1, len1);
-    } finally {
-      wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
-    }
-  }
-  /**
-   * @param {string} name
-   */
-  set tagName(name) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      name,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_set_tag_name(this.__wbg_ptr, ptr0, len0);
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
-   * @returns {any}
-   */
-  get namespaceURI() {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ret = wasm.element_namespace_uri(this.__wbg_ptr);
-    if (ret[2]) {
-      throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-  }
-  /**
-   * @returns {any}
-   */
-  get attributes() {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ret = wasm.element_attributes(this.__wbg_ptr);
-    if (ret[2]) {
-      throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-  }
-  /**
-   * @param {string} name
-   * @returns {any}
-   */
-  getAttribute(name) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      name,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_getAttribute(this.__wbg_ptr, ptr0, len0);
-    if (ret[2]) {
-      throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-  }
-  /**
-   * @param {string} name
-   * @returns {boolean}
-   */
-  hasAttribute(name) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      name,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_hasAttribute(this.__wbg_ptr, ptr0, len0);
-    if (ret[2]) {
-      throw takeFromExternrefTable0(ret[1]);
-    }
-    return ret[0] !== 0;
-  }
-  /**
    * @param {string} name
    * @param {string} value
    */
@@ -472,100 +280,6 @@ export class Element {
       ptr1,
       len1,
     );
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
-   * @param {string} name
-   */
-  removeAttribute(name) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      name,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_removeAttribute(this.__wbg_ptr, ptr0, len0);
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  prepend(content, content_type) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      content,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_prepend(
-      this.__wbg_ptr,
-      ptr0,
-      len0,
-      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
-    );
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  append(content, content_type) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      content,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_append(
-      this.__wbg_ptr,
-      ptr0,
-      len0,
-      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
-    );
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  setInnerContent(content, content_type) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ptr0 = passStringToWasm0(
-      content,
-      wasm.__wbindgen_malloc,
-      wasm.__wbindgen_realloc,
-    );
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.element_setInnerContent(
-      this.__wbg_ptr,
-      ptr0,
-      len0,
-      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
-    );
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  removeAndKeepContent() {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ret = wasm.element_removeAndKeepContent(this.__wbg_ptr);
     if (ret[1]) {
       throw takeFromExternrefTable0(ret[0]);
     }
@@ -646,15 +360,6 @@ export class HTMLRewriter {
 
 const imports = {
   __wbindgen_placeholder__: {
-    __wbg_html_21c4d3ca6b14b151: function () {
-      return logError(function (arg0) {
-        const ret = arg0.html;
-        if (!isLikeNone(ret)) {
-          _assertBoolean(ret);
-        }
-        return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
-      }, arguments);
-    },
     __wbg_element_9f7a29ae173a1783: function () {
       return logError(function (arg0) {
         const ret = arg0.element;
@@ -678,30 +383,6 @@ const imports = {
           _assertBoolean(ret);
         }
         return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
-      }, arguments);
-    },
-    __wbg_String_b9412f8799faab3e: function () {
-      return logError(function (arg0, arg1) {
-        const ret = String(arg1);
-        const ptr1 = passStringToWasm0(
-          ret,
-          wasm.__wbindgen_malloc,
-          wasm.__wbindgen_realloc,
-        );
-        const len1 = WASM_VECTOR_LEN;
-        getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
-        getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
-      }, arguments);
-    },
-    __wbg_new_034f913e7636e987: function () {
-      return logError(function () {
-        const ret = new Array();
-        return ret;
-      }, arguments);
-    },
-    __wbg_set_425e70f7c64ac962: function () {
-      return logError(function (arg0, arg1, arg2) {
-        arg0[arg1 >>> 0] = arg2;
       }, arguments);
     },
     __wbg_call_3bfa248576352471: function () {

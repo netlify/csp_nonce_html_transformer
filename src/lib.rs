@@ -1,5 +1,4 @@
 use js_sys::TypeError;
-use lol_html::html_content::ContentType as NativeContentType;
 use std::cell::Cell;
 use std::convert::Into;
 use std::marker::PhantomData;
@@ -64,12 +63,6 @@ impl<R> NativeRefWrap<R> {
         }
     }
 
-    pub fn get(&self) -> JsResult<&R> {
-        self.assert_not_poisoned()?;
-
-        Ok(unsafe { self.inner_ptr.as_ref() }.unwrap())
-    }
-
     pub fn get_mut(&mut self) -> JsResult<&mut R> {
         self.assert_not_poisoned()?;
 
@@ -92,75 +85,12 @@ impl<T, E: ToString> IntoJsResult<T> for Result<T, E> {
     }
 }
 
-trait IntoNative<T> {
-    fn into_native(self) -> T;
-}
-
 #[wasm_bindgen]
 extern "C" {
     pub type ContentTypeOptions;
 
     #[wasm_bindgen(method, getter)]
     fn html(this: &ContentTypeOptions) -> Option<bool>;
-}
-
-impl IntoNative<NativeContentType> for Option<ContentTypeOptions> {
-    fn into_native(self) -> NativeContentType {
-        match self {
-            Some(opts) => match opts.html() {
-                Some(true) => NativeContentType::Html,
-                Some(false) => NativeContentType::Text,
-                None => NativeContentType::Text,
-            },
-            None => NativeContentType::Text,
-        }
-    }
-}
-
-macro_rules! impl_mutations {
-    ($Ty:ident) => {
-        #[wasm_bindgen]
-        impl $Ty {
-            pub fn before(
-                &mut self,
-                content: &str,
-                content_type: Option<ContentTypeOptions>,
-            ) -> Result<(), JsValue> {
-                self.0
-                    .get_mut()
-                    .map(|o| o.before(content, content_type.into_native()))
-            }
-
-            pub fn after(
-                &mut self,
-                content: &str,
-                content_type: Option<ContentTypeOptions>,
-            ) -> Result<(), JsValue> {
-                self.0
-                    .get_mut()
-                    .map(|o| o.after(content, content_type.into_native()))
-            }
-
-            pub fn replace(
-                &mut self,
-                content: &str,
-                content_type: Option<ContentTypeOptions>,
-            ) -> Result<(), JsValue> {
-                self.0
-                    .get_mut()
-                    .map(|o| o.replace(content, content_type.into_native()))
-            }
-
-            pub fn remove(&mut self) -> Result<(), JsValue> {
-                self.0.get_mut().map(|o| o.remove())
-            }
-
-            #[wasm_bindgen(getter)]
-            pub fn removed(&self) -> JsResult<bool> {
-                self.0.get().map(|o| o.removed())
-            }
-        }
-    };
 }
 
 macro_rules! impl_from_native {
