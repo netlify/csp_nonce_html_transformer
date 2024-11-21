@@ -22,4 +22,3 @@ wasm-opt = ["-O3", "--enable-bulk-memory"]
 lto = true
 codegen-units = 1
 panic = "abort"
-debug = true
