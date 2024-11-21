@@ -4,7 +4,7 @@ use super::document_end::DocumentEnd;
 use super::element::Element;
 use super::text_chunk::TextChunk;
 use super::*;
-use js_sys::{Function as JsFunction, Promise as JsPromise};
+use js_sys::Function as JsFunction;
 use lol_html::{
     DocumentContentHandlers as NativeDocumentContentHandlers,
     ElementContentHandlers as NativeElementContentHandlers,
@@ -12,7 +12,6 @@ use lol_html::{
 use std::mem;
 use std::rc::Rc;
 use thiserror::Error;
-use wasm_bindgen::JsCast;
 
 // NOTE: Display is noop, because we'll unwrap JSValue error when it will be propagated to
 // `write()` or `end()`.

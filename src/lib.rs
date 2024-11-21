@@ -40,6 +40,7 @@ impl Drop for Anchor<'_> {
 struct NativeRefWrap<R> {
     inner_ptr: *mut R,
     poisoned: Rc<Cell<bool>>,
+    #[allow(dead_code)]
     stack_ptr: *mut u8,
 }
 
@@ -168,6 +169,7 @@ macro_rules! impl_mutations {
 macro_rules! impl_from_native {
     ($Ty:ident --> $JsTy:ident) => {
         impl $JsTy {
+            #[allow(dead_code)]
             pub(crate) fn from_native<'r>(
                 inner: &'r mut $Ty,
                 stack_ptr: *mut u8,
