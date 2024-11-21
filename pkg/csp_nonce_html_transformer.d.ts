@@ -1,40 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-export class Comment {
-  free(): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  before(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  after(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  replace(content: string, content_type?: any): void;
-  remove(): void;
-  readonly removed: boolean;
-  text: string;
-}
-export class Doctype {
-  free(): void;
-  readonly name: any;
-  readonly publicId: any;
-  readonly systemId: any;
-}
-export class DocumentEnd {
-  free(): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  append(content: string, content_type?: any): void;
-}
 export class Element {
   free(): void;
   /**
@@ -93,21 +58,6 @@ export class Element {
   readonly removed: boolean;
   tagName: string;
 }
-export class EndTag {
-  free(): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  before(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  after(content: string, content_type?: any): void;
-  remove(): void;
-  name: string;
-}
 export class HTMLRewriter {
   free(): void;
   /**
@@ -125,26 +75,4 @@ export class HTMLRewriter {
    */
   write(chunk: Uint8Array): void;
   end(): void;
-}
-export class TextChunk {
-  free(): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  before(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  after(content: string, content_type?: any): void;
-  /**
-   * @param {string} content
-   * @param {any | undefined} [content_type]
-   */
-  replace(content: string, content_type?: any): void;
-  remove(): void;
-  readonly lastInTextNode: boolean;
-  readonly removed: boolean;
-  readonly text: string;
 }

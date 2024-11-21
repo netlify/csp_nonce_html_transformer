@@ -1,6 +1,4 @@
-use super::comment::Comment;
 use super::element::Element;
-use super::text_chunk::TextChunk;
 use super::*;
 use js_sys::Function as JsFunction;
 use lol_html::ElementContentHandlers as NativeElementContentHandlers;
@@ -64,16 +62,6 @@ impl IntoNativeHandlers<NativeElementContentHandlers<'static>> for ElementConten
         if let Some(handler) = self.element() {
             let this = Rc::clone(&handlers);
             native = native.element(make_handler!(handler, Element, this, stack_ptr));
-        }
-
-        if let Some(handler) = self.comments() {
-            let this = Rc::clone(&handlers);
-            native = native.comments(make_handler!(handler, Comment, this, stack_ptr));
-        }
-
-        if let Some(handler) = self.text() {
-            let this = Rc::clone(&handlers);
-            native = native.text(make_handler!(handler, TextChunk, this, stack_ptr));
         }
 
         native

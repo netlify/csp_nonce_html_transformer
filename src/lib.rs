@@ -178,11 +178,6 @@ macro_rules! impl_from_native {
     };
 }
 
-mod comment;
-mod doctype;
-mod document_end;
 mod element;
-mod end_tag;
 mod handlers;
 mod html_rewriter;
-mod text_chunk;
