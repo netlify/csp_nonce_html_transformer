@@ -2,7 +2,7 @@ import {
   assertMatch,
   assertStrictEquals,
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { csp } from "../src/index.ts";
+import { csp, init } from "../src/index.ts";
 
 import * as cheerio from "https://cdn.jsdelivr.net/npm/cheerio/+esm";
 
@@ -17,7 +17,7 @@ Deno.test({
   fn: async () => {
     let response = await fetch("https://html.spec.whatwg.org/");
     response = new Response(response.body, response);
-
+    await init();
     const result = await csp(response);
     const policy: Map<string, string[]> = parseContentSecurityPolicy(
       result.headers.get("content-security-policy")!,
@@ -46,7 +46,7 @@ Deno.test({
     const response = new Response("meow", {
       headers: { "content-type": "text/plain" },
     });
-
+    await init();
     const result = await csp(response);
     assertStrictEquals(response, result);
     assertEquals(result.headers.has("content-security-policy"), false);
@@ -133,7 +133,7 @@ Deno.test({
       },
     );
     const originBody = await response.clone().arrayBuffer();
-
+    await init();
     const result = await csp(response);
     assertEquals(originBody, await result.arrayBuffer());
   },
@@ -149,7 +149,7 @@ Deno.test({
         },
       },
     );
-
+    await init();
     const result = await csp(response);
     const policy: Map<string, string[]> = parseContentSecurityPolicy(
       result.headers.get("content-security-policy")!,
@@ -181,7 +181,7 @@ Deno.test({
           "img-src 'self' blob: data:; script-src 'strict-dynamic' 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='",
       },
     });
-
+    await init();
     const result = await csp(response);
     const policy: Map<string, string[]> = parseContentSecurityPolicy(
       result.headers.get("content-security-policy") || "",
@@ -209,7 +209,7 @@ Deno.test({
           "img-src 'self' blob: data:; script-src 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='",
       },
     });
-
+    await init();
     const result = await csp(response, { distribution: "0" });
     assertStrictEquals(
       result.headers.get("content-security-policy")!,
@@ -233,7 +233,7 @@ Deno.test({
           "img-src 'self' blob: data:; script-src 'sha256-/Cb4VxgL2aVP0MVDvbP0DgEOUv+MeNQmZX4yXHkn/c0='",
       },
     });
-
+    await init();
     const result = await csp(response, { distribution: "0%" });
     assertStrictEquals(
       result.headers.get("content-security-policy")!,
@@ -255,7 +255,7 @@ Deno.test({
         "content-type": "text/html; charset=utf-8",
       },
     });
-
+    await init();
     const result = await csp(response, { reportOnly: true });
     assertMatch(
       result.headers.get("content-security-policy-report-only")!,
@@ -273,7 +273,7 @@ Deno.test({
         "content-type": "text/html; charset=utf-8",
       },
     });
-
+    await init();
     const result = await csp(response, { unsafeEval: true });
     assertMatch(
       result.headers.get("content-security-policy")!,
@@ -291,7 +291,7 @@ Deno.test({
         "content-type": "text/html; charset=utf-8",
       },
     });
-
+    await init();
     const result = await csp(response, { reportUri: "https://example.com" });
     assertMatch(
       result.headers.get("content-security-policy")!,
