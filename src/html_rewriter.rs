@@ -1,4 +1,6 @@
-use super::handlers::{ ElementContentHandlers, HandlerJsErrorWrap, IntoNativeHandlers };
+use super::handlers::{
+    ElementContentHandlers, HandlerJsErrorWrap, IntoNativeHandlers,
+};
 use super::*;
 use js_sys::{Function as JsFunction, Uint8Array};
 use lol_html::errors::RewritingError;

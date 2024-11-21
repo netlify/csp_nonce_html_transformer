@@ -421,11 +421,6 @@ function __wbg_get_imports() {
 function __wbg_init_memory(imports, memory) {
 }
 
-/**
- * @param {WebAssembly.Instance} instance
- * @param {*} module
- * @returns
- */
 function __wbg_finalize_init(instance, module) {
   wasm = instance.exports;
   __wbg_init.__wbindgen_wasm_module = module;

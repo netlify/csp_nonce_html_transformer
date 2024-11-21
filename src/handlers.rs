@@ -45,7 +45,7 @@ impl IntoNativeHandlers<NativeElementContentHandlers<'static>> for ElementConten
                 {
                     h
                 }
-                NativeElementContentHandlers::default().element(
+                lol_html::ElementContentHandlers::default().element(
                     type_hint(
                         move |el: &mut _| {
                             let (js_arg, anchor) = Element::from_native(el);
