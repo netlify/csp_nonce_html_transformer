@@ -114,9 +114,8 @@ impl HTMLRewriter {
         let selector = selector.parse::<Selector>().into_js_result()?;
 
         self.selectors.push(selector);
-        let stack_ptr = self.asyncify_stack_ptr();
         self.element_content_handlers
-            .push(handlers.into_native(stack_ptr));
+            .push(handlers.into_native());
 
         Ok(())
     }
@@ -124,9 +123,8 @@ impl HTMLRewriter {
     #[wasm_bindgen(method, js_name=onDocument)]
     pub fn on_document(&mut self, handlers: DocumentContentHandlers) -> JsResult<()> {
         self.assert_not_fully_constructed()?;
-        let stack_ptr = self.asyncify_stack_ptr();
         self.document_content_handlers
-            .push(handlers.into_native(stack_ptr));
+            .push(handlers.into_native());
 
         Ok(())
     }

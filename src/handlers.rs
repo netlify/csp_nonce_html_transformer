@@ -25,7 +25,7 @@ unsafe impl Sync for HandlerJsErrorWrap {}
 macro_rules! make_handler {
     ($handler:ident, $JsArgType:ident, $this:ident, $stack_ptr:ident) => {
         move |arg: &mut _| {
-            let (js_arg, anchor) = $JsArgType::from_native(arg, $stack_ptr);
+            let (js_arg, anchor) = $JsArgType::from_native(arg);
             let js_arg = JsValue::from(js_arg);
 
             let res = match $handler.call1(&$this, &js_arg) {
@@ -44,7 +44,7 @@ macro_rules! make_handler {
 pub(crate) use make_handler;
 
 pub trait IntoNativeHandlers<T> {
-    fn into_native(self, stack_ptr: *mut u8) -> T;
+    fn into_native(self) -> T;
 }
 
 #[wasm_bindgen]
@@ -62,7 +62,7 @@ extern "C" {
 }
 
 impl IntoNativeHandlers<NativeElementContentHandlers<'static>> for ElementContentHandlers {
-    fn into_native(self, stack_ptr: *mut u8) -> NativeElementContentHandlers<'static> {
+    fn into_native(self) -> NativeElementContentHandlers<'static> {
         let handlers: Rc<JsValue> = Rc::new((&self).into());
         let mut native = NativeElementContentHandlers::default();
 
@@ -103,7 +103,7 @@ extern "C" {
 }
 
 impl IntoNativeHandlers<NativeDocumentContentHandlers<'static>> for DocumentContentHandlers {
-    fn into_native(self, stack_ptr: *mut u8) -> NativeDocumentContentHandlers<'static> {
+    fn into_native(self) -> NativeDocumentContentHandlers<'static> {
         let handlers: Rc<JsValue> = Rc::new((&self).into());
         let mut native = NativeDocumentContentHandlers::default();
 

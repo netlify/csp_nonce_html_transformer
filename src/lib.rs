@@ -40,16 +40,13 @@ impl Drop for Anchor<'_> {
 struct NativeRefWrap<R> {
     inner_ptr: *mut R,
     poisoned: Rc<Cell<bool>>,
-    #[allow(dead_code)]
-    stack_ptr: *mut u8,
 }
 
 impl<R> NativeRefWrap<R> {
-    pub fn wrap<I>(inner: &mut I, stack_ptr: *mut u8) -> (Self, Anchor) {
+    pub fn wrap<I>(inner: &mut I) -> (Self, Anchor) {
         let wrap = NativeRefWrap {
             inner_ptr: unsafe { mem::transmute(inner) },
             poisoned: Rc::new(Cell::new(false)),
-            stack_ptr,
         };
 
         let anchor = Anchor::new(Rc::clone(&wrap.poisoned));
@@ -172,9 +169,8 @@ macro_rules! impl_from_native {
             #[allow(dead_code)]
             pub(crate) fn from_native<'r>(
                 inner: &'r mut $Ty,
-                stack_ptr: *mut u8,
             ) -> (Self, Anchor<'r>) {
-                let (ref_wrap, anchor) = NativeRefWrap::wrap(inner, stack_ptr);
+                let (ref_wrap, anchor) = NativeRefWrap::wrap(inner);
 
                 ($JsTy(ref_wrap), anchor)
             }
