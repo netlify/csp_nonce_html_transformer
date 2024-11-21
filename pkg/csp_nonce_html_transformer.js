@@ -106,6 +106,10 @@ const encodeString = function (arg, view) {
 };
 
 function passStringToWasm0(arg, malloc, realloc) {
+  if (typeof arg !== "string") {
+    throw new Error(`expected a string argument, found ${typeof arg}`);
+  }
+
   if (realloc === undefined) {
     const buf = cachedTextEncoder.encode(arg);
     const ptr = malloc(buf.length, 1) >>> 0;
@@ -134,7 +138,7 @@ function passStringToWasm0(arg, malloc, realloc) {
     ptr = realloc(ptr, len, len = offset + arg.length * 3, 1) >>> 0;
     const view = getUint8ArrayMemory0().subarray(ptr + offset, ptr + len);
     const ret = encodeString(arg, view);
-
+    if (ret.read !== arg.length) throw new Error("failed to pass whole string");
     offset += ret.written;
     ptr = realloc(ptr, len, offset, 1) >>> 0;
   }
@@ -157,12 +161,6 @@ function getDataViewMemory0() {
   return cachedDataViewMemory0;
 }
 
-function takeFromExternrefTable0(idx) {
-  const value = wasm.__wbindgen_export_2.get(idx);
-  wasm.__externref_table_dealloc(idx);
-  return value;
-}
-
 function isLikeNone(x) {
   return x === undefined || x === null;
 }
@@ -171,6 +169,39 @@ function addToExternrefTable0(obj) {
   const idx = wasm.__externref_table_alloc();
   wasm.__wbindgen_export_2.set(idx, obj);
   return idx;
+}
+
+function logError(f, args) {
+  try {
+    return f.apply(this, args);
+  } catch (e) {
+    let error = function () {
+      try {
+        return e instanceof Error
+          ? `${e.message}\n\nStack:\n${e.stack}`
+          : e.toString();
+      } catch (_) {
+        return "<failed to stringify thrown value>";
+      }
+    }();
+    console.error(
+      "wasm-bindgen: imported JS function that was not marked as `catch` threw an error:",
+      error,
+    );
+    throw e;
+  }
+}
+
+function _assertNum(n) {
+  if (typeof n !== "number") {
+    throw new Error(`expected a number argument, found ${typeof n}`);
+  }
+}
+
+function takeFromExternrefTable0(idx) {
+  const value = wasm.__wbindgen_export_2.get(idx);
+  wasm.__externref_table_dealloc(idx);
+  return value;
 }
 
 function passArray8ToWasm0(arg, malloc) {
@@ -194,6 +225,10 @@ const ElementFinalization = (typeof FinalizationRegistry === "undefined")
   : new FinalizationRegistry((ptr) => wasm.__wbg_element_free(ptr >>> 0, 1));
 
 export class Element {
+  constructor() {
+    throw new Error("cannot invoke `new` directly");
+  }
+
   static __wrap(ptr) {
     ptr = ptr >>> 0;
     const obj = Object.create(Element.prototype);
@@ -218,6 +253,8 @@ export class Element {
    * @param {string} value
    */
   setAttribute(name, value) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
     const ptr0 = passStringToWasm0(
       name,
       wasm.__wbindgen_malloc,
@@ -275,6 +312,8 @@ export class HTMLRewriter {
    * @param {any} handlers
    */
   on(selector, handlers) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
     const ptr0 = passStringToWasm0(
       selector,
       wasm.__wbindgen_malloc,
@@ -290,6 +329,8 @@ export class HTMLRewriter {
    * @param {Uint8Array} chunk
    */
   write(chunk) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
     const ptr0 = passArray8ToWasm0(chunk, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.htmlrewriter_write(this.__wbg_ptr, ptr0, len0);
@@ -298,6 +339,8 @@ export class HTMLRewriter {
     }
   }
   end() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
     const ret = wasm.htmlrewriter_end(this.__wbg_ptr);
     if (ret[1]) {
       throw takeFromExternrefTable0(ret[0]);
@@ -307,17 +350,21 @@ export class HTMLRewriter {
 
 const imports = {
   __wbindgen_placeholder__: {
+    __wbg_element_9f7a29ae173a1783: function () {
+      return logError(function (arg0) {
+        const ret = arg0.element;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+      }, arguments);
+    },
     __wbindgen_string_new: function (arg0, arg1) {
       const ret = getStringFromWasm0(arg0, arg1);
       return ret;
     },
-    __wbg_element_9f7a29ae173a1783: function (arg0) {
-      const ret = arg0.element;
-      return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
-    },
-    __wbg_element_new: function (arg0) {
-      const ret = Element.__wrap(arg0);
-      return ret;
+    __wbg_element_new: function () {
+      return logError(function (arg0) {
+        const ret = Element.__wrap(arg0);
+        return ret;
+      }, arguments);
     },
     __wbg_call_3bfa248576352471: function () {
       return handleError(function (arg0, arg1, arg2) {
@@ -325,25 +372,29 @@ const imports = {
         return ret;
       }, arguments);
     },
-    __wbg_new_9a7e38dd635a4e93: function (arg0, arg1) {
-      const ret = new TypeError(getStringFromWasm0(arg0, arg1));
-      return ret;
+    __wbg_new_9a7e38dd635a4e93: function () {
+      return logError(function (arg0, arg1) {
+        const ret = new TypeError(getStringFromWasm0(arg0, arg1));
+        return ret;
+      }, arguments);
     },
-    __wbg_buffer_ccaed51a635d8a2d: function (arg0) {
-      const ret = arg0.buffer;
-      return ret;
+    __wbg_new_fec2611eb9180f95: function () {
+      return logError(function (arg0) {
+        const ret = new Uint8Array(arg0);
+        return ret;
+      }, arguments);
     },
-    __wbg_newwithbyteoffsetandlength_7e3eb787208af730: function (
-      arg0,
-      arg1,
-      arg2,
-    ) {
-      const ret = new Uint8Array(arg0, arg1 >>> 0, arg2 >>> 0);
-      return ret;
+    __wbg_newwithbyteoffsetandlength_7e3eb787208af730: function () {
+      return logError(function (arg0, arg1, arg2) {
+        const ret = new Uint8Array(arg0, arg1 >>> 0, arg2 >>> 0);
+        return ret;
+      }, arguments);
     },
-    __wbg_new_fec2611eb9180f95: function (arg0) {
-      const ret = new Uint8Array(arg0);
-      return ret;
+    __wbg_buffer_ccaed51a635d8a2d: function () {
+      return logError(function (arg0) {
+        const ret = arg0.buffer;
+        return ret;
+      }, arguments);
     },
     __wbindgen_debug_string: function (arg0, arg1) {
       const ret = debugString(arg1);
