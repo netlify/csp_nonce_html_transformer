@@ -1051,15 +1051,6 @@ export class HTMLRewriter {
       throw takeFromExternrefTable0(ret[0]);
     }
   }
-  /**
-   * @returns {number}
-   */
-  get asyncifyStackPtr() {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ret = wasm.htmlrewriter_asyncify_stack_ptr(this.__wbg_ptr);
-    return ret >>> 0;
-  }
 }
 
 const TextChunkFinalization = (typeof FinalizationRegistry === "undefined")

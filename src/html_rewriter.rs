@@ -47,7 +47,6 @@ pub struct HTMLRewriter {
     output_sink: Option<JsOutputSink>,
     inner: Option<NativeHTMLRewriter<'static, JsOutputSink>>,
     inner_constructed: bool,
-    asyncify_stack: Vec<u8>,
     enable_esi_tags: bool,
 }
 
@@ -65,7 +64,6 @@ impl HTMLRewriter {
     pub fn new(output_sink: &JsFunction, options: Option<HTMLRewriterOptions>) -> Self {
         HTMLRewriter {
             output_sink: Some(JsOutputSink::new(output_sink)),
-            asyncify_stack: vec![0; 1024],
             enable_esi_tags: options.and_then(|o| o.enable_esi_tags()).unwrap_or(false),
             ..Self::default()
         }
@@ -143,10 +141,5 @@ impl HTMLRewriter {
             .unwrap()
             .end()
             .map_err(rewriting_error_to_js)
-    }
-
-    #[wasm_bindgen(getter=asyncifyStackPtr)]
-    pub fn asyncify_stack_ptr(&mut self) -> *mut u8 {
-        self.asyncify_stack.as_mut_ptr()
     }
 }

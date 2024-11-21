@@ -12,7 +12,6 @@ export function htmlrewriter_on(
 export function htmlrewriter_onDocument(a: number, b: number): Array;
 export function htmlrewriter_write(a: number, b: number, c: number): Array;
 export function htmlrewriter_end(a: number): Array;
-export function htmlrewriter_asyncify_stack_ptr(a: number): number;
 export function __wbg_endtag_free(a: number, b: number): void;
 export function endtag_name(a: number): Array;
 export function endtag_set_name(a: number, b: number, c: number): Array;

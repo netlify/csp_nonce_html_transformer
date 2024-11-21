@@ -129,7 +129,6 @@ export class HTMLRewriter {
    */
   write(chunk: Uint8Array): void;
   end(): void;
-  readonly asyncifyStackPtr: number;
 }
 export class TextChunk {
   free(): void;
