@@ -15,26 +15,26 @@ pub struct HandlerJsErrorWrap(pub JsValue);
 unsafe impl Send for HandlerJsErrorWrap {}
 unsafe impl Sync for HandlerJsErrorWrap {}
 
-macro_rules! make_handler {
-    ($handler:ident, $JsArgType:ident, $this:ident, $stack_ptr:ident) => {
-        move |arg: &mut _| {
-            let (js_arg, anchor) = $JsArgType::from_native(arg);
-            let js_arg = JsValue::from(js_arg);
+// macro_rules! make_handler {
+//     ($handler:ident, $JsArgType:ident, $this:ident, $stack_ptr:ident) => {
+//         move |arg: &mut _| {
+//             let (js_arg, anchor) = $JsArgType::from_native(arg);
+//             let js_arg = JsValue::from(js_arg);
 
-            let res = match $handler.call1(&$this, &js_arg) {
-                Ok(_) => {
-                    Ok(())
-                }
-                Err(e) => Err(HandlerJsErrorWrap(e).into()),
-            };
+//             let res = match $handler.call1(&$this, &js_arg) {
+//                 Ok(_) => {
+//                     Ok(())
+//                 }
+//                 Err(e) => Err(HandlerJsErrorWrap(e).into()),
+//             };
 
-            mem::drop(anchor);
+//             mem::drop(anchor);
 
-            res
-        }
-    };
-}
-pub(crate) use make_handler;
+//             res
+//         }
+//     };
+// }
+// pub(crate) use make_handler;
 
 pub trait IntoNativeHandlers<T> {
     fn into_native(self) -> T;
@@ -59,9 +59,39 @@ impl IntoNativeHandlers<NativeElementContentHandlers<'static>> for ElementConten
         let handlers: Rc<JsValue> = Rc::new((&self).into());
         let mut native = NativeElementContentHandlers::default();
 
+        // if let Some(handler) = self.element() {
+        //     let this = Rc::clone(&handlers);
+        //     native = native.element(make_handler!(handler, Element, this, stack_ptr));
+        // }
+
         if let Some(handler) = self.element() {
             let this = Rc::clone(&handlers);
-            native = native.element(make_handler!(handler, Element, this, stack_ptr));
+            native = {
+                #[inline(always)]
+                fn type_hint<'h, T, H: lol_html::HandlerTypes>(h: T) -> T
+                where
+                    T: FnMut(
+                            &mut lol_html::html_content::Element<'_, '_, H>,
+                        ) -> lol_html::HandlerResult
+                        + 'h,
+                {
+                    h
+                }
+                NativeElementContentHandlers::default().element(
+                    type_hint(
+                        move |el: &mut _| {
+                            let (js_arg, anchor) = Element::from_native(el);
+                            let js_arg = JsValue::from(js_arg);
+                            let res = match handler.call1(&this, &js_arg) {
+                                Ok(_) => Ok(()),
+                                Err(e) => Err(HandlerJsErrorWrap(e).into()),
+                            };
+                            mem::drop(anchor);
+                            res
+                        },
+                    ),
+                )
+            };
         }
 
         native

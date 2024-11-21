@@ -646,15 +646,6 @@ export class HTMLRewriter {
 
 const imports = {
   __wbindgen_placeholder__: {
-    __wbg_enableEsiTags_f773d89434472a3e: function () {
-      return logError(function (arg0) {
-        const ret = arg0.enableEsiTags;
-        if (!isLikeNone(ret)) {
-          _assertBoolean(ret);
-        }
-        return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
-      }, arguments);
-    },
     __wbg_html_21c4d3ca6b14b151: function () {
       return logError(function (arg0) {
         const ret = arg0.html;
@@ -662,6 +653,12 @@ const imports = {
           _assertBoolean(ret);
         }
         return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
+      }, arguments);
+    },
+    __wbg_element_9f7a29ae173a1783: function () {
+      return logError(function (arg0) {
+        const ret = arg0.element;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
       }, arguments);
     },
     __wbindgen_string_new: function (arg0, arg1) {
@@ -674,10 +671,13 @@ const imports = {
         return ret;
       }, arguments);
     },
-    __wbg_element_9f7a29ae173a1783: function () {
+    __wbg_enableEsiTags_f773d89434472a3e: function () {
       return logError(function (arg0) {
-        const ret = arg0.element;
-        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+        const ret = arg0.enableEsiTags;
+        if (!isLikeNone(ret)) {
+          _assertBoolean(ret);
+        }
+        return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
       }, arguments);
     },
     __wbg_String_b9412f8799faab3e: function () {
