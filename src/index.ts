@@ -1,7 +1,8 @@
-import init from "../pkg/html_rewriter.js";
 import { HTMLRewriter } from "./html_rewriter_wrapper.ts";
 import { Element } from "./types.d.ts";
 
+import { default as init } from "../pkg/html_rewriter.js";
+await init();
 type Params = {
   /**
    * When true, uses the `Content-Security-Policy-Report-Only` header instead
@@ -59,7 +60,7 @@ function uInt8ArrayToBase64String(input: Uint8Array): string {
   return btoa(res);
 }
 
-export async function csp(originalResponse: Response, params?: Params) {
+export function csp(originalResponse: Response, params?: Params) {
   const isHTMLResponse = originalResponse.headers.get("content-type")
     ?.startsWith(
       "text/html",
@@ -146,7 +147,6 @@ export async function csp(originalResponse: Response, params?: Params) {
   }
 
   const querySelectors = ["script", 'link[rel="preload"][as="script"]'];
-  await init();
   return new HTMLRewriter()
     .on(querySelectors.join(","), {
       element(element: Element) {
