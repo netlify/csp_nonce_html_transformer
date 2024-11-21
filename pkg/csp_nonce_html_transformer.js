@@ -1,3 +1,5 @@
+import { awaitPromise } from "./asyncify.js";
+
 const cachedTextDecoder = typeof TextDecoder !== "undefined"
   ? new TextDecoder("utf-8", { ignoreBOM: true, fatal: true })
   : {
@@ -165,10 +167,10 @@ function isLikeNone(x) {
   return x === undefined || x === null;
 }
 
-function addToExternrefTable0(obj) {
-  const idx = wasm.__externref_table_alloc();
-  wasm.__wbindgen_export_2.set(idx, obj);
-  return idx;
+function _assertBoolean(n) {
+  if (typeof n !== "boolean") {
+    throw new Error(`expected a boolean argument, found ${typeof n}`);
+  }
 }
 
 function logError(f, args) {
@@ -190,6 +192,12 @@ function logError(f, args) {
     );
     throw e;
   }
+}
+
+function addToExternrefTable0(obj) {
+  const idx = wasm.__externref_table_alloc();
+  wasm.__wbindgen_export_2.set(idx, obj);
+  return idx;
 }
 
 function _assertNum(n) {
@@ -217,6 +225,287 @@ function handleError(f, args) {
   } catch (e) {
     const idx = addToExternrefTable0(e);
     wasm.__wbindgen_exn_store(idx);
+  }
+}
+
+const CommentFinalization = (typeof FinalizationRegistry === "undefined")
+  ? { register: () => {}, unregister: () => {} }
+  : new FinalizationRegistry((ptr) => wasm.__wbg_comment_free(ptr >>> 0, 1));
+
+export class Comment {
+  constructor() {
+    throw new Error("cannot invoke `new` directly");
+  }
+
+  static __wrap(ptr) {
+    ptr = ptr >>> 0;
+    const obj = Object.create(Comment.prototype);
+    obj.__wbg_ptr = ptr;
+    CommentFinalization.register(obj, obj.__wbg_ptr, obj);
+    return obj;
+  }
+
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    CommentFinalization.unregister(this);
+    return ptr;
+  }
+
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_comment_free(ptr, 0);
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  before(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.comment_before(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  after(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.comment_after(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  replace(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.comment_replace(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  remove() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.comment_remove(this.__wbg_ptr);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @returns {boolean}
+   */
+  get removed() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.comment_removed(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return ret[0] !== 0;
+  }
+  /**
+   * @returns {string}
+   */
+  get text() {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+      if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+      _assertNum(this.__wbg_ptr);
+      const ret = wasm.comment_text(this.__wbg_ptr);
+      var ptr1 = ret[0];
+      var len1 = ret[1];
+      if (ret[3]) {
+        ptr1 = 0;
+        len1 = 0;
+        throw takeFromExternrefTable0(ret[2]);
+      }
+      deferred2_0 = ptr1;
+      deferred2_1 = len1;
+      return getStringFromWasm0(ptr1, len1);
+    } finally {
+      wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+  }
+  /**
+   * @param {string} text
+   */
+  set text(text) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      text,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.comment_set_text(this.__wbg_ptr, ptr0, len0);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+}
+
+const DoctypeFinalization = (typeof FinalizationRegistry === "undefined")
+  ? { register: () => {}, unregister: () => {} }
+  : new FinalizationRegistry((ptr) => wasm.__wbg_doctype_free(ptr >>> 0, 1));
+
+export class Doctype {
+  constructor() {
+    throw new Error("cannot invoke `new` directly");
+  }
+
+  static __wrap(ptr) {
+    ptr = ptr >>> 0;
+    const obj = Object.create(Doctype.prototype);
+    obj.__wbg_ptr = ptr;
+    DoctypeFinalization.register(obj, obj.__wbg_ptr, obj);
+    return obj;
+  }
+
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    DoctypeFinalization.unregister(this);
+    return ptr;
+  }
+
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_doctype_free(ptr, 0);
+  }
+  /**
+   * @returns {any}
+   */
+  get name() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.doctype_name(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+  }
+  /**
+   * @returns {any}
+   */
+  get publicId() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.doctype_public_id(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+  }
+  /**
+   * @returns {any}
+   */
+  get systemId() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.doctype_system_id(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+  }
+}
+
+const DocumentEndFinalization = (typeof FinalizationRegistry === "undefined")
+  ? { register: () => {}, unregister: () => {} }
+  : new FinalizationRegistry((ptr) =>
+    wasm.__wbg_documentend_free(ptr >>> 0, 1)
+  );
+
+export class DocumentEnd {
+  constructor() {
+    throw new Error("cannot invoke `new` directly");
+  }
+
+  static __wrap(ptr) {
+    ptr = ptr >>> 0;
+    const obj = Object.create(DocumentEnd.prototype);
+    obj.__wbg_ptr = ptr;
+    DocumentEndFinalization.register(obj, obj.__wbg_ptr, obj);
+    return obj;
+  }
+
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    DocumentEndFinalization.unregister(this);
+    return ptr;
+  }
+
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_documentend_free(ptr, 0);
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  append(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.documentend_append(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
   }
 }
 
@@ -249,6 +538,198 @@ export class Element {
     wasm.__wbg_element_free(ptr, 0);
   }
   /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  before(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_before(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  after(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_after(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  replace(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_replace(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  remove() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.element_remove(this.__wbg_ptr);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @returns {boolean}
+   */
+  get removed() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.element_removed(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return ret[0] !== 0;
+  }
+  /**
+   * @returns {string}
+   */
+  get tagName() {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+      if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+      _assertNum(this.__wbg_ptr);
+      const ret = wasm.element_tag_name(this.__wbg_ptr);
+      var ptr1 = ret[0];
+      var len1 = ret[1];
+      if (ret[3]) {
+        ptr1 = 0;
+        len1 = 0;
+        throw takeFromExternrefTable0(ret[2]);
+      }
+      deferred2_0 = ptr1;
+      deferred2_1 = len1;
+      return getStringFromWasm0(ptr1, len1);
+    } finally {
+      wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+  }
+  /**
+   * @param {string} name
+   */
+  set tagName(name) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      name,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_set_tag_name(this.__wbg_ptr, ptr0, len0);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @returns {any}
+   */
+  get namespaceURI() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.element_namespace_uri(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+  }
+  /**
+   * @returns {any}
+   */
+  get attributes() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.element_attributes(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+  }
+  /**
+   * @param {string} name
+   * @returns {any}
+   */
+  getAttribute(name) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      name,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_getAttribute(this.__wbg_ptr, ptr0, len0);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+  }
+  /**
+   * @param {string} name
+   * @returns {boolean}
+   */
+  hasAttribute(name) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      name,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_hasAttribute(this.__wbg_ptr, ptr0, len0);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return ret[0] !== 0;
+  }
+  /**
    * @param {string} name
    * @param {string} value
    */
@@ -278,6 +759,217 @@ export class Element {
       throw takeFromExternrefTable0(ret[0]);
     }
   }
+  /**
+   * @param {string} name
+   */
+  removeAttribute(name) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      name,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_removeAttribute(this.__wbg_ptr, ptr0, len0);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  prepend(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_prepend(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  append(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_append(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  setInnerContent(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.element_setInnerContent(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  removeAndKeepContent() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.element_removeAndKeepContent(this.__wbg_ptr);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+}
+
+const EndTagFinalization = (typeof FinalizationRegistry === "undefined")
+  ? { register: () => {}, unregister: () => {} }
+  : new FinalizationRegistry((ptr) => wasm.__wbg_endtag_free(ptr >>> 0, 1));
+
+export class EndTag {
+  constructor() {
+    throw new Error("cannot invoke `new` directly");
+  }
+
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    EndTagFinalization.unregister(this);
+    return ptr;
+  }
+
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_endtag_free(ptr, 0);
+  }
+  /**
+   * @returns {string}
+   */
+  get name() {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+      if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+      _assertNum(this.__wbg_ptr);
+      const ret = wasm.endtag_name(this.__wbg_ptr);
+      var ptr1 = ret[0];
+      var len1 = ret[1];
+      if (ret[3]) {
+        ptr1 = 0;
+        len1 = 0;
+        throw takeFromExternrefTable0(ret[2]);
+      }
+      deferred2_0 = ptr1;
+      deferred2_1 = len1;
+      return getStringFromWasm0(ptr1, len1);
+    } finally {
+      wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+  }
+  /**
+   * @param {string} name
+   */
+  set name(name) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      name,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.endtag_set_name(this.__wbg_ptr, ptr0, len0);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  before(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.endtag_before(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  after(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.endtag_after(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  remove() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.endtag_remove(this.__wbg_ptr);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
 }
 
 const HTMLRewriterFinalization = (typeof FinalizationRegistry === "undefined")
@@ -300,9 +992,13 @@ export class HTMLRewriter {
   }
   /**
    * @param {Function} output_sink
+   * @param {any | undefined} [options]
    */
-  constructor(output_sink) {
-    const ret = wasm.htmlrewriter_new(output_sink);
+  constructor(output_sink, options) {
+    const ret = wasm.htmlrewriter_new(
+      output_sink,
+      isLikeNone(options) ? 0 : addToExternrefTable0(options),
+    );
     this.__wbg_ptr = ret >>> 0;
     HTMLRewriterFinalization.register(this, this.__wbg_ptr, this);
     return this;
@@ -321,6 +1017,17 @@ export class HTMLRewriter {
     );
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.htmlrewriter_on(this.__wbg_ptr, ptr0, len0, handlers);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {any} handlers
+   */
+  onDocument(handlers) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.htmlrewriter_onDocument(this.__wbg_ptr, handlers);
     if (ret[1]) {
       throw takeFromExternrefTable0(ret[0]);
     }
@@ -346,24 +1053,295 @@ export class HTMLRewriter {
       throw takeFromExternrefTable0(ret[0]);
     }
   }
+  /**
+   * @returns {number}
+   */
+  get asyncifyStackPtr() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.htmlrewriter_asyncify_stack_ptr(this.__wbg_ptr);
+    return ret >>> 0;
+  }
+}
+
+const TextChunkFinalization = (typeof FinalizationRegistry === "undefined")
+  ? { register: () => {}, unregister: () => {} }
+  : new FinalizationRegistry((ptr) => wasm.__wbg_textchunk_free(ptr >>> 0, 1));
+
+export class TextChunk {
+  constructor() {
+    throw new Error("cannot invoke `new` directly");
+  }
+
+  static __wrap(ptr) {
+    ptr = ptr >>> 0;
+    const obj = Object.create(TextChunk.prototype);
+    obj.__wbg_ptr = ptr;
+    TextChunkFinalization.register(obj, obj.__wbg_ptr, obj);
+    return obj;
+  }
+
+  __destroy_into_raw() {
+    const ptr = this.__wbg_ptr;
+    this.__wbg_ptr = 0;
+    TextChunkFinalization.unregister(this);
+    return ptr;
+  }
+
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_textchunk_free(ptr, 0);
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  before(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.textchunk_before(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  after(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.textchunk_after(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @param {string} content
+   * @param {any | undefined} [content_type]
+   */
+  replace(content, content_type) {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ptr0 = passStringToWasm0(
+      content,
+      wasm.__wbindgen_malloc,
+      wasm.__wbindgen_realloc,
+    );
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.textchunk_replace(
+      this.__wbg_ptr,
+      ptr0,
+      len0,
+      isLikeNone(content_type) ? 0 : addToExternrefTable0(content_type),
+    );
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  remove() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.textchunk_remove(this.__wbg_ptr);
+    if (ret[1]) {
+      throw takeFromExternrefTable0(ret[0]);
+    }
+  }
+  /**
+   * @returns {boolean}
+   */
+  get removed() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.textchunk_removed(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return ret[0] !== 0;
+  }
+  /**
+   * @returns {string}
+   */
+  get text() {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+      if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+      _assertNum(this.__wbg_ptr);
+      const ret = wasm.textchunk_text(this.__wbg_ptr);
+      var ptr1 = ret[0];
+      var len1 = ret[1];
+      if (ret[3]) {
+        ptr1 = 0;
+        len1 = 0;
+        throw takeFromExternrefTable0(ret[2]);
+      }
+      deferred2_0 = ptr1;
+      deferred2_1 = len1;
+      return getStringFromWasm0(ptr1, len1);
+    } finally {
+      wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+  }
+  /**
+   * @returns {boolean}
+   */
+  get lastInTextNode() {
+    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
+    _assertNum(this.__wbg_ptr);
+    const ret = wasm.textchunk_last_in_text_node(this.__wbg_ptr);
+    if (ret[2]) {
+      throw takeFromExternrefTable0(ret[1]);
+    }
+    return ret[0] !== 0;
+  }
 }
 
 const imports = {
   __wbindgen_placeholder__: {
-    __wbg_element_9f7a29ae173a1783: function () {
+    __wbg_enableEsiTags_f773d89434472a3e: function () {
       return logError(function (arg0) {
-        const ret = arg0.element;
-        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+        const ret = arg0.enableEsiTags;
+        if (!isLikeNone(ret)) {
+          _assertBoolean(ret);
+        }
+        return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
+      }, arguments);
+    },
+    __wbg_html_21c4d3ca6b14b151: function () {
+      return logError(function (arg0) {
+        const ret = arg0.html;
+        if (!isLikeNone(ret)) {
+          _assertBoolean(ret);
+        }
+        return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
       }, arguments);
     },
     __wbindgen_string_new: function (arg0, arg1) {
       const ret = getStringFromWasm0(arg0, arg1);
       return ret;
     },
+    __wbg_comment_new: function () {
+      return logError(function (arg0) {
+        const ret = Comment.__wrap(arg0);
+        return ret;
+      }, arguments);
+    },
+    __wbg_doctype_new: function () {
+      return logError(function (arg0) {
+        const ret = Doctype.__wrap(arg0);
+        return ret;
+      }, arguments);
+    },
+    __wbg_documentend_new: function () {
+      return logError(function (arg0) {
+        const ret = DocumentEnd.__wrap(arg0);
+        return ret;
+      }, arguments);
+    },
     __wbg_element_new: function () {
       return logError(function (arg0) {
         const ret = Element.__wrap(arg0);
         return ret;
+      }, arguments);
+    },
+    __wbg_textchunk_new: function () {
+      return logError(function (arg0) {
+        const ret = TextChunk.__wrap(arg0);
+        return ret;
+      }, arguments);
+    },
+    __wbg_awaitPromise_313318e7657812c3: function () {
+      return logError(function (arg0, arg1) {
+        awaitPromise(arg0 >>> 0, arg1);
+      }, arguments);
+    },
+    __wbg_element_9f7a29ae173a1783: function () {
+      return logError(function (arg0) {
+        const ret = arg0.element;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+      }, arguments);
+    },
+    __wbg_comments_d0f2588cfd8fb2ae: function () {
+      return logError(function (arg0) {
+        const ret = arg0.comments;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+      }, arguments);
+    },
+    __wbg_text_4f51c2aff0e8dfa7: function () {
+      return logError(function (arg0) {
+        const ret = arg0.text;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+      }, arguments);
+    },
+    __wbg_doctype_51e5196c1e758077: function () {
+      return logError(function (arg0) {
+        const ret = arg0.doctype;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+      }, arguments);
+    },
+    __wbg_comments_78fee064e6b4bdd7: function () {
+      return logError(function (arg0) {
+        const ret = arg0.comments;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+      }, arguments);
+    },
+    __wbg_text_b65dd2bb2bc16a12: function () {
+      return logError(function (arg0) {
+        const ret = arg0.text;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+      }, arguments);
+    },
+    __wbg_end_c6c7e99b41918cc0: function () {
+      return logError(function (arg0) {
+        const ret = arg0.end;
+        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
+      }, arguments);
+    },
+    __wbg_String_b9412f8799faab3e: function () {
+      return logError(function (arg0, arg1) {
+        const ret = String(arg1);
+        const ptr1 = passStringToWasm0(
+          ret,
+          wasm.__wbindgen_malloc,
+          wasm.__wbindgen_realloc,
+        );
+        const len1 = WASM_VECTOR_LEN;
+        getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
+        getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
+      }, arguments);
+    },
+    __wbg_new_034f913e7636e987: function () {
+      return logError(function () {
+        const ret = new Array();
+        return ret;
+      }, arguments);
+    },
+    __wbg_set_425e70f7c64ac962: function () {
+      return logError(function (arg0, arg1, arg2) {
+        arg0[arg1 >>> 0] = arg2;
       }, arguments);
     },
     __wbg_call_3bfa248576352471: function () {
@@ -375,6 +1353,19 @@ const imports = {
     __wbg_new_9a7e38dd635a4e93: function () {
       return logError(function (arg0, arg1) {
         const ret = new TypeError(getStringFromWasm0(arg0, arg1));
+        return ret;
+      }, arguments);
+    },
+    __wbg_instanceof_Promise_f3fd1bcac3157f0c: function () {
+      return logError(function (arg0) {
+        let result;
+        try {
+          result = arg0 instanceof Promise;
+        } catch (_) {
+          result = false;
+        }
+        const ret = result;
+        _assertBoolean(ret);
         return ret;
       }, arguments);
     },
