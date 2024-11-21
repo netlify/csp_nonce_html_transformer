@@ -12,9 +12,8 @@ export class HTMLRewriter {
   free(): void;
   /**
    * @param {Function} output_sink
-   * @param {any | undefined} [options]
    */
-  constructor(output_sink: Function, options?: any);
+  constructor(output_sink: Function);
   /**
    * @param {string} selector
    * @param {any} handlers

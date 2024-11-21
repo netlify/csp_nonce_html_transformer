@@ -192,12 +192,6 @@ function logError(f, args) {
   }
 }
 
-function _assertBoolean(n) {
-  if (typeof n !== "boolean") {
-    throw new Error(`expected a boolean argument, found ${typeof n}`);
-  }
-}
-
 function _assertNum(n) {
   if (typeof n !== "number") {
     throw new Error(`expected a number argument, found ${typeof n}`);
@@ -306,13 +300,9 @@ export class HTMLRewriter {
   }
   /**
    * @param {Function} output_sink
-   * @param {any | undefined} [options]
    */
-  constructor(output_sink, options) {
-    const ret = wasm.htmlrewriter_new(
-      output_sink,
-      isLikeNone(options) ? 0 : addToExternrefTable0(options),
-    );
+  constructor(output_sink) {
+    const ret = wasm.htmlrewriter_new(output_sink);
     this.__wbg_ptr = ret >>> 0;
     HTMLRewriterFinalization.register(this, this.__wbg_ptr, this);
     return this;
@@ -374,15 +364,6 @@ const imports = {
       return logError(function (arg0) {
         const ret = Element.__wrap(arg0);
         return ret;
-      }, arguments);
-    },
-    __wbg_enableEsiTags_f773d89434472a3e: function () {
-      return logError(function (arg0) {
-        const ret = arg0.enableEsiTags;
-        if (!isLikeNone(ret)) {
-          _assertBoolean(ret);
-        }
-        return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
       }, arguments);
     },
     __wbg_call_3bfa248576352471: function () {

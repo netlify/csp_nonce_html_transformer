@@ -85,18 +85,9 @@ impl<T, E: ToString> IntoJsResult<T> for Result<T, E> {
     }
 }
 
-#[wasm_bindgen]
-extern "C" {
-    pub type ContentTypeOptions;
-
-    #[wasm_bindgen(method, getter)]
-    fn html(this: &ContentTypeOptions) -> Option<bool>;
-}
-
 macro_rules! impl_from_native {
     ($Ty:ident --> $JsTy:ident) => {
         impl $JsTy {
-            #[allow(dead_code)]
             pub(crate) fn from_native<'r>(
                 inner: &'r mut $Ty,
             ) -> (Self, Anchor<'r>) {

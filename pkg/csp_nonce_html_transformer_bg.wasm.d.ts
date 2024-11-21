@@ -2,7 +2,7 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export function __wbg_htmlrewriter_free(a: number, b: number): void;
-export function htmlrewriter_new(a: number, b: number): number;
+export function htmlrewriter_new(a: number): number;
 export function htmlrewriter_on(
   a: number,
   b: number,
