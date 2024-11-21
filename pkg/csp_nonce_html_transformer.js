@@ -1,5 +1,3 @@
-import { awaitPromise } from "./asyncify.js";
-
 const cachedTextDecoder = typeof TextDecoder !== "undefined"
   ? new TextDecoder("utf-8", { ignoreBOM: true, fatal: true })
   : {
@@ -1273,11 +1271,6 @@ const imports = {
         return ret;
       }, arguments);
     },
-    __wbg_awaitPromise_313318e7657812c3: function () {
-      return logError(function (arg0, arg1) {
-        awaitPromise(arg0 >>> 0, arg1);
-      }, arguments);
-    },
     __wbg_element_9f7a29ae173a1783: function () {
       return logError(function (arg0) {
         const ret = arg0.element;
@@ -1353,19 +1346,6 @@ const imports = {
     __wbg_new_9a7e38dd635a4e93: function () {
       return logError(function (arg0, arg1) {
         const ret = new TypeError(getStringFromWasm0(arg0, arg1));
-        return ret;
-      }, arguments);
-    },
-    __wbg_instanceof_Promise_f3fd1bcac3157f0c: function () {
-      return logError(function (arg0) {
-        let result;
-        try {
-          result = arg0 instanceof Promise;
-        } catch (_) {
-          result = false;
-        }
-        const ret = result;
-        _assertBoolean(ret);
         return ret;
       }, arguments);
     },

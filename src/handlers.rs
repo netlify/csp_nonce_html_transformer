@@ -23,12 +23,6 @@ pub struct HandlerJsErrorWrap(pub JsValue);
 unsafe impl Send for HandlerJsErrorWrap {}
 unsafe impl Sync for HandlerJsErrorWrap {}
 
-#[wasm_bindgen(raw_module = "./asyncify.js")]
-extern "C" {
-    #[wasm_bindgen(js_name = awaitPromise)]
-    pub(crate) fn await_promise(stack_ptr: *mut u8, promise: &JsPromise);
-}
-
 macro_rules! make_handler {
     ($handler:ident, $JsArgType:ident, $this:ident, $stack_ptr:ident) => {
         move |arg: &mut _| {
@@ -36,10 +30,7 @@ macro_rules! make_handler {
             let js_arg = JsValue::from(js_arg);
 
             let res = match $handler.call1(&$this, &js_arg) {
-                Ok(res) => {
-                    if let Some(promise) = res.dyn_ref::<JsPromise>() {
-                        await_promise($stack_ptr, promise);
-                    }
+                Ok(_) => {
                     Ok(())
                 }
                 Err(e) => Err(HandlerJsErrorWrap(e).into()),
