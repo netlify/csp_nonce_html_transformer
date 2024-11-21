@@ -121,10 +121,6 @@ export class HTMLRewriter {
    */
   on(selector: string, handlers: any): void;
   /**
-   * @param {any} handlers
-   */
-  onDocument(handlers: any): void;
-  /**
    * @param {Uint8Array} chunk
    */
   write(chunk: Uint8Array): void;

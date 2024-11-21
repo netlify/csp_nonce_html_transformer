@@ -1,6 +1,4 @@
-use super::handlers::{
-    DocumentContentHandlers, ElementContentHandlers, HandlerJsErrorWrap, IntoNativeHandlers,
-};
+use super::handlers::{ ElementContentHandlers, HandlerJsErrorWrap, IntoNativeHandlers };
 use super::*;
 use js_sys::{Function as JsFunction, Uint8Array};
 use lol_html::errors::RewritingError;
@@ -113,15 +111,6 @@ impl HTMLRewriter {
 
         self.selectors.push(selector);
         self.element_content_handlers
-            .push(handlers.into_native());
-
-        Ok(())
-    }
-
-    #[wasm_bindgen(method, js_name=onDocument)]
-    pub fn on_document(&mut self, handlers: DocumentContentHandlers) -> JsResult<()> {
-        self.assert_not_fully_constructed()?;
-        self.document_content_handlers
             .push(handlers.into_native());
 
         Ok(())

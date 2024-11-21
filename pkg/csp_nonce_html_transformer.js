@@ -395,14 +395,6 @@ export class Doctype {
     throw new Error("cannot invoke `new` directly");
   }
 
-  static __wrap(ptr) {
-    ptr = ptr >>> 0;
-    const obj = Object.create(Doctype.prototype);
-    obj.__wbg_ptr = ptr;
-    DoctypeFinalization.register(obj, obj.__wbg_ptr, obj);
-    return obj;
-  }
-
   __destroy_into_raw() {
     const ptr = this.__wbg_ptr;
     this.__wbg_ptr = 0;
@@ -461,14 +453,6 @@ const DocumentEndFinalization = (typeof FinalizationRegistry === "undefined")
 export class DocumentEnd {
   constructor() {
     throw new Error("cannot invoke `new` directly");
-  }
-
-  static __wrap(ptr) {
-    ptr = ptr >>> 0;
-    const obj = Object.create(DocumentEnd.prototype);
-    obj.__wbg_ptr = ptr;
-    DocumentEndFinalization.register(obj, obj.__wbg_ptr, obj);
-    return obj;
   }
 
   __destroy_into_raw() {
@@ -1020,17 +1004,6 @@ export class HTMLRewriter {
     }
   }
   /**
-   * @param {any} handlers
-   */
-  onDocument(handlers) {
-    if (this.__wbg_ptr == 0) throw new Error("Attempt to use a moved value");
-    _assertNum(this.__wbg_ptr);
-    const ret = wasm.htmlrewriter_onDocument(this.__wbg_ptr, handlers);
-    if (ret[1]) {
-      throw takeFromExternrefTable0(ret[0]);
-    }
-  }
-  /**
    * @param {Uint8Array} chunk
    */
   write(chunk) {
@@ -1238,18 +1211,6 @@ const imports = {
         return ret;
       }, arguments);
     },
-    __wbg_doctype_new: function () {
-      return logError(function (arg0) {
-        const ret = Doctype.__wrap(arg0);
-        return ret;
-      }, arguments);
-    },
-    __wbg_documentend_new: function () {
-      return logError(function (arg0) {
-        const ret = DocumentEnd.__wrap(arg0);
-        return ret;
-      }, arguments);
-    },
     __wbg_element_new: function () {
       return logError(function (arg0) {
         const ret = Element.__wrap(arg0);
@@ -1277,30 +1238,6 @@ const imports = {
     __wbg_text_4f51c2aff0e8dfa7: function () {
       return logError(function (arg0) {
         const ret = arg0.text;
-        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
-      }, arguments);
-    },
-    __wbg_doctype_51e5196c1e758077: function () {
-      return logError(function (arg0) {
-        const ret = arg0.doctype;
-        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
-      }, arguments);
-    },
-    __wbg_comments_78fee064e6b4bdd7: function () {
-      return logError(function (arg0) {
-        const ret = arg0.comments;
-        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
-      }, arguments);
-    },
-    __wbg_text_b65dd2bb2bc16a12: function () {
-      return logError(function (arg0) {
-        const ret = arg0.text;
-        return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
-      }, arguments);
-    },
-    __wbg_end_c6c7e99b41918cc0: function () {
-      return logError(function (arg0) {
-        const ret = arg0.end;
         return isLikeNone(ret) ? 0 : addToExternrefTable0(ret);
       }, arguments);
     },

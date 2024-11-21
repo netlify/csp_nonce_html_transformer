@@ -9,7 +9,6 @@ export function htmlrewriter_on(
   c: number,
   d: number,
 ): Array;
-export function htmlrewriter_onDocument(a: number, b: number): Array;
 export function htmlrewriter_write(a: number, b: number, c: number): Array;
 export function htmlrewriter_end(a: number): Array;
 export function __wbg_endtag_free(a: number, b: number): void;
