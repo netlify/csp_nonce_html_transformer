@@ -1,7 +1,7 @@
 import { HTMLRewriter } from "./html_rewriter_wrapper.ts";
 import { Element } from "./types.d.ts";
 
-import { default as init } from "../pkg/html_rewriter.js";
+import { default as init } from "../pkg/csp_nonce_html_transformer.js";
 await init();
 type Params = {
   /**

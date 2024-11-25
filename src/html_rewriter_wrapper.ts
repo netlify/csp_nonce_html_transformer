@@ -1,4 +1,4 @@
-import { HTMLRewriter as RawHTMLRewriter } from "../pkg/html_rewriter.js";
+import { HTMLRewriter as RawHTMLRewriter } from "../pkg/csp_nonce_html_transformer.js";
 
 import { ElementHandlers } from "./types.d.ts";
 
