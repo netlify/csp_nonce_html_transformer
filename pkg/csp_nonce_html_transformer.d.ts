@@ -1,27 +1,14 @@
 /* tslint:disable */
 /* eslint-disable */
 export class Element {
+  private constructor();
   free(): void;
-  /**
-   * @param {string} name
-   * @param {string} value
-   */
   setAttribute(name: string, value: string): void;
 }
 export class HTMLRewriter {
   free(): void;
-  /**
-   * @param {Function} output_sink
-   */
   constructor(output_sink: Function);
-  /**
-   * @param {string} selector
-   * @param {any} handlers
-   */
   on(selector: string, handlers: any): void;
-  /**
-   * @param {Uint8Array} chunk
-   */
   write(chunk: Uint8Array): void;
   end(): void;
 }
@@ -42,17 +29,24 @@ export interface InitOutput {
     c: number,
     d: number,
     e: number,
-  ) => Array;
+  ) => [number, number];
   readonly __wbg_htmlrewriter_free: (a: number, b: number) => void;
-  readonly htmlrewriter_new: (a: number) => number;
+  readonly htmlrewriter_new: (a: any) => number;
   readonly htmlrewriter_on: (
     a: number,
     b: number,
     c: number,
-    d: number,
-  ) => Array;
-  readonly htmlrewriter_write: (a: number, b: number, c: number) => Array;
-  readonly htmlrewriter_end: (a: number) => Array;
+    d: any,
+  ) => [number, number];
+  readonly htmlrewriter_write: (
+    a: number,
+    b: number,
+    c: number,
+  ) => [number, number];
+  readonly htmlrewriter_end: (a: number) => [number, number];
+  readonly __wbindgen_exn_store: (a: number) => void;
+  readonly __externref_table_alloc: () => number;
+  readonly __wbindgen_export_2: WebAssembly.Table;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (
     a: number,
@@ -60,10 +54,7 @@ export interface InitOutput {
     c: number,
     d: number,
   ) => number;
-  readonly __wbindgen_export_2: WebAssembly.Table;
   readonly __externref_table_dealloc: (a: number) => void;
-  readonly __externref_table_alloc: () => number;
-  readonly __wbindgen_exn_store: (a: number) => void;
   readonly __wbindgen_start: () => void;
 }
 
