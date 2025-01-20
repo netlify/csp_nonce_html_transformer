@@ -24,7 +24,7 @@ export class HTMLRewriter {
       response = new Response(response.body, response);
     }
 
-    let rewriter: RawHTMLRewriter;
+    let rewriter: RawHTMLRewriter | undefined;
     const transformStream = new TransformStream<Uint8Array, Uint8Array>({
       start: (controller) => {
         // Create a rewriter instance for this transformation that writes its
@@ -39,10 +39,21 @@ export class HTMLRewriter {
           rewriter.on(selector, handlers);
         }
       },
-      transform: (chunk) => rewriter.write(chunk),
+      transform: (chunk) => rewriter?.write(chunk),
+      // deno-lint-ignore require-await
+      async cancel() {
+        if (rewriter) {
+          rewriter.end();
+          rewriter.free();
+          rewriter = undefined;
+        }
+      },
       flush: () => {
-        rewriter.end();
-        rewriter.free();
+        if (rewriter) {
+          rewriter.end();
+          rewriter.free();
+          rewriter = undefined;
+        }
       },
     });
 
