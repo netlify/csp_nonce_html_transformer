@@ -47,7 +47,15 @@ export class HTMLRewriter {
     });
 
     // Return a response with the transformed body, copying over headers, etc
-    const res = new Response(body.pipeThrough(transformStream), response);
+    const res = new Response(
+      body.pipeThrough(transformStream, {
+        // Work around an issue in Deno where an uncatchable exception is thrown
+        // if/when the client aborts the incoming request.
+        // https://github.com/denoland/deno/issues/27715
+        preventAbort: true,
+      }),
+      response,
+    );
     // If Content-Length is set, it's probably going to be wrong, since we're
     // rewriting content, so remove it
     res.headers.delete("Content-Length");
