@@ -5,13 +5,12 @@ import {
 
 import * as cheerio from "https://esm.sh/cheerio@1.1.0/dist/browser/index.js?bundle=false";
 
-import cspParser from "https://esm.sh/content-security-policy-parser@0.6.0/script/mod.js";
+import parseContentSecurityPolicy from "https://esm.sh/content-security-policy-parser@0.6.0/script/mod.js";
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/assert_equals.ts";
 import { assert } from "https://deno.land/std@0.224.0/assert/assert.ts";
 import { assertArrayIncludes } from "https://deno.land/std@0.224.0/assert/assert_array_includes.ts";
 
 import type { Params } from "../src/csp.ts";
-const parseContentSecurityPolicy = cspParser.default;
 export default async function (
   csp: (originalResponse: Response, params?: Params) => Response,
 ) {
