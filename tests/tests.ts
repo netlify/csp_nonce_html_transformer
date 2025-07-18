@@ -3,7 +3,7 @@ import {
   assertStrictEquals,
 } from "https://deno.land/std@0.224.0/assert/mod.ts";
 
-import * as cheerio from "https://cdn.jsdelivr.net/npm/cheerio/+esm";
+import * as cheerio from "https://cdn.jsdelivr.net/npm/cheerio@1.1.0/dist/browser/index.js";
 
 import cspParser from "https://cdn.jsdelivr.net/npm/content-security-policy-parser@0.6.0/script/mod.js/+esm";
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/assert_equals.ts";
