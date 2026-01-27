@@ -1,5 +1,9 @@
-import { default as init } from "../pkg/csp_nonce_html_transformer.js";
-import { wasmBinary } from "../pkg/embedded-wasm.ts";
-await init({ module_or_path: wasmBinary });
+import { initHtmlRewriter } from "../pkg/html-rewriter-wasm.ts";
 
-export { csp } from "./csp-internal.ts";
+import { csp as cspInternal, type Params } from "./csp-internal.ts";
+
+export { type Params } from "./csp-internal.ts";
+
+export function csp(originalResponse: Response, params?: Params) {
+  return cspInternal(initHtmlRewriter, originalResponse, params);
+}

@@ -3,10 +3,12 @@
 export class Element {
   private constructor();
   free(): void;
+  [Symbol.dispose](): void;
   setAttribute(name: string, value: string): void;
 }
 export class HTMLRewriter {
   free(): void;
+  [Symbol.dispose](): void;
   constructor(output_sink: Function);
   on(selector: string, handlers: any): void;
   write(chunk: Uint8Array): void;
@@ -44,9 +46,6 @@ export interface InitOutput {
     c: number,
   ) => [number, number];
   readonly htmlrewriter_end: (a: number) => [number, number];
-  readonly __wbindgen_exn_store: (a: number) => void;
-  readonly __externref_table_alloc: () => number;
-  readonly __wbindgen_export_2: WebAssembly.Table;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (
     a: number,
@@ -54,6 +53,9 @@ export interface InitOutput {
     c: number,
     d: number,
   ) => number;
+  readonly __wbindgen_exn_store: (a: number) => void;
+  readonly __externref_table_alloc: () => number;
+  readonly __wbindgen_externrefs: WebAssembly.Table;
   readonly __externref_table_dealloc: (a: number) => void;
   readonly __wbindgen_start: () => void;
 }

@@ -58,7 +58,13 @@ function uInt8ArrayToBase64String(input: Uint8Array): string {
   return btoa(res);
 }
 
-export function csp(originalResponse: Response, params?: Params) {
+let initializedHTMLRewriter = false;
+
+export function csp(
+  initHtmlRewriter: () => void,
+  originalResponse: Response,
+  params?: Params,
+) {
   const isHTMLResponse = originalResponse.headers
     .get("content-type")
     ?.startsWith("text/html");
@@ -142,6 +148,11 @@ export function csp(originalResponse: Response, params?: Params) {
       value.push(`report-uri ${params.reportUri}`);
     }
     response.headers.set(header, value.join("; "));
+  }
+
+  if (!initializedHTMLRewriter) {
+    initHtmlRewriter();
+    initializedHTMLRewriter = true;
   }
 
   const querySelectors = ["script", 'link[rel="preload"][as="script"]'];
